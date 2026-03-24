@@ -1,0 +1,53 @@
+1. CORE CUSTOMER VALUE (ACADEMIC VERSION)
+The concept of Core Customer Value (the fundamental benefit that customers seek) is derived from marketing theory, particularly the work of Philip Kotler.
+ In this project, the platform delivers value to two primary customer segments: players and venue owners.
+
+For Players
+The core value lies in convenience, accessibility, and social connection in sports participation.
+Firstly, the platform enables users to efficiently find available courts and suitable players, addressing the fragmentation of current solutions such as messaging groups or manual coordination. This significantly reduces the time and effort required to organize matches.
+Secondly, the system improves match quality and user satisfaction by connecting players of similar skill levels, thereby minimizing mismatches and enhancing the overall experience.
+Thirdly, the platform fosters a sense of community, encouraging regular participation in sports activities. This contributes not only to convenience but also to long-term user engagement and healthier lifestyles.
+Finally, the platform introduces pricing transparency, helping users avoid issues such as inconsistent or inflated pricing often observed in informal booking arrangements.
+
+For Venue Owners
+For venue owners, the core value focuses on revenue optimization and operational efficiency.
+The platform helps increase court utilization rates, particularly during off-peak hours, by connecting venues with a broader pool of users.
+In addition, it reduces reliance on manual processes such as phone calls, spreadsheets, or messaging applications, thereby improving operational accuracy and efficiency.
+Furthermore, access to user data enables venue owners to make more informed decisions regarding pricing, scheduling, and marketing strategies.
+
+Core Value Summary
+The core value of the platform can be summarized as:
+ Connection – Efficiency – Optimization – Community Building
+
+ACTUAL PRODUCT (ACADEMIC VERSION)
+The Actual Product refers to the tangible features and functionalities that users directly interact with.
+
+For Players
+The platform is delivered as a mobile application (iOS and Android) that integrates multiple functions into a single system.
+Users can create personalized profiles, including skill level, availability, and location. This information forms the basis for matching and recommendations.
+The application provides real-time court availability, allowing users to search and book courts instantly. This reduces uncertainty and improves the reliability of the booking process.
+Additionally, the system supports player matching, enabling users to find partners or opponents based on relevant criteria such as skill level and schedule.
+Pricing information is presented transparently, and users can benefit from incentives such as group bookings or off-peak discounts, which further enhance affordability and accessibility.
+
+For Venue Owners
+Venue owners are provided with a management dashboard that allows them to monitor and control operations.
+This includes real-time scheduling, pricing adjustments, and booking management, which significantly reduces errors such as double bookings.
+The platform also provides basic analytics, such as occupancy rates and revenue tracking, enabling data-driven decision-making.
+Marketing tools are integrated to help venues promote available time slots and attract new customers within their local area.
+
+Summary
+The Actual Product represents the functional layer of the platform, where users can directly interact, transact, and derive immediate value.
+
+3. AUGMENTED PRODUCT (ACADEMIC VERSION)
+The Augmented Product includes additional features and services that enhance user experience and differentiate the platform from competitors.
+
+For Players
+The platform incorporates algorithm-based recommendations to suggest suitable players and optimal courts based on user behavior, preferences, and historical data.
+It also tracks user activity, such as playing frequency, to encourage long-term engagement and habit formation.
+A built-in community system allows users to participate in groups based on skill level or interests, strengthening social interaction within the platform.
+Customer support services are provided to resolve booking issues, thereby improving trust and reliability.
+
+For Venue Owners
+For venue owners, the platform offers advanced tools to optimize capacity utilization, such as dynamic pricing and targeted promotions for low-demand time slots.
+Behavioral data analytics provide insights into peak hours, customer segments, and usage patterns, enabling more effective business strategies.
+Additionally, the platform functions as a marketing channel, allowing venues to increase visibility and build a loyal customer base without relying on external platforms.

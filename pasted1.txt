@@ -1,0 +1,64 @@
+The Product/Market Fit Canvas
+Customer Segment
+The platform targets two primary customer groups, including sports players and sports field owners, each with distinct characteristics and needs.
+Players are typically male and female users aged between 16 and 25, including students and office workers who have an active interest in sports and maintaining a healthy lifestyle. This group is highly dynamic, digitally active, and frequently participates in recreational sports such as football, badminton, and tennis. They often seek convenience, speed, and social interaction in their sports activities.
+Field owners, on the other hand, are individuals or organizations that manage or invest in sports facilities such as artificial turf football fields, badminton courts, and tennis courts. Their primary focus is on maximizing the utilization of their facilities, optimizing revenue, and maintaining efficient operations.
+Jobs to be Done
+The key needs and objectives of these customer segments can be summarized as follows:
+For players, the platform aims to:
+Help them quickly find available sports fields, especially during peak hours.
+Enable them to connect with other players, including finding opponents with similar skill levels or joining teams that are short of members.
+Provide a convenient and reliable booking experience that reduces the time and effort required to organize matches.
+For field owners, the platform aims to:
+Support them in filling empty time slots, particularly during off-peak hours.
+Provide tools to manage booking schedules, customer information, and revenue streams more efficiently.
+Minimize the risk of booking cancellations or no-shows, thereby improving operational stability and profitability.
+Alternatives
+Currently, both players and field owners rely on several traditional and fragmented solutions.
+Players often call sports fields directly to check availability. While this is a straightforward method, it is highly time-consuming and inefficient, especially when multiple calls are required. They also use Facebook or Zalo groups to arrange matches, but these platforms are often disorganized, with information quickly buried in message threads and lacking verification mechanisms.
+From the perspective of field owners, booking management is commonly handled through paper records or Excel spreadsheets, which are prone to human error, miscommunication, and double booking. Some owners use point-of-sale (POS) systems such as Sapo or Kiot; however, these systems are typically designed for transaction management and are not integrated with online booking platforms, resulting in a lack of synchronization.
+Additionally, both groups use Google Maps to locate sports fields, but this tool does not provide real-time information about field availability, making it insufficient for booking purposes.
+Overall, these alternatives are fragmented, inefficient, and lack real-time coordination, creating significant gaps in the user experience.
+Problems and Needs
+Based on observation and user insights, several key problems have been identified for each customer segment.
+For players, the main challenges include:
+The need to contact multiple sports fields before finding an available slot, which wastes time and effort.
+Unexpected shortages of players, leading to canceled or incomplete matches.
+Imbalance in skill levels between players or teams, which negatively affects the quality of the game and user satisfaction.
+Concerns about handling cash payments, including inconvenience and lack of transparency.
+For field owners, the major issues include:
+The occurrence of no-shows, where customers book a field but fail to appear, resulting in revenue loss.
+Difficulty in managing cash flow and tracking revenue accurately, especially when relying on manual processes.
+The risk of errors such as double booking due to the lack of integrated systems.
+Limited access to marketing tools, making it challenging to attract new customers and expand their user base.
+These challenges highlight a clear need for a centralized digital platform that can streamline booking processes, improve transparency, and enhance both operational efficiency and user experience.
+Key Features
+To address the identified problems, the platform offers several core features designed to create value for both players and field owners.
+First, the real-time booking system allows users to view available time slots and reserve fields instantly, similar to booking movie tickets. This significantly reduces the time required to secure a field and improves reliability.
+Second, the matchmaking feature functions as a “Tinder for sports,” enabling users to find teammates or opponents based on criteria such as skill level, location, and preferred time slots. This feature directly addresses the social and coordination challenges faced by players.
+Third, the platform provides an admin dashboard for field owners, which includes tools for managing booking schedules, tracking revenue, and handling customer check-ins באמצעות QR codes. This improves operational efficiency and reduces manual errors.
+Fourth, the online payment and deposit system ensures that bookings are secured in advance, thereby reducing the likelihood of no-shows and providing more predictable revenue streams for field owners.
+Finally, the rating and review system enables users to evaluate both the quality of sports facilities and the behavior of other players. This enhances trust, transparency, and overall service quality within the platform.
+Channels
+The platform utilizes a combination of online and offline channels to reach its target customers.
+Online channels include social media platforms such as Facebook and TikTok, where targeted advertising and community engagement activities (e.g., seeding in sports groups) are conducted. Search engines (SEO/Google) also play a crucial role, as users frequently search for nearby sports facilities using keywords such as “badminton court near me.”
+The platform also leverages referral programs, encouraging existing users to invite friends through incentives and promotions, thereby accelerating user acquisition through network effects.
+Offline channels include partnerships with sports facilities, where banners, standees, and QR codes are placed on-site. These allow players to easily access and download the application while physically उपस्थित at the venue.
+Value for the Channel
+In addition to delivering value to end users, the platform also provides significant benefits to its partners and distribution channels.
+For field owners, the platform serves as an additional sales and marketing channel, helping them increase occupancy rates, especially during low-demand periods. It also enhances their operational professionalism through better management tools.
+For sports communities, such as Facebook group administrators, the platform enables more efficient organization of matches and tournaments. It also provides opportunities to create engaging content and strengthen community interaction.
+Overall, the platform contributes to building a more connected and efficient sports ecosystem by aligning the interests of players, field owners, and community stakeholders.
+User Experience
+The user journey is designed to be intuitive, seamless, and user-friendly.
+First, users open the application and search for sports fields by selecting the type of sport, location, and preferred time.
+Next, they evaluate options by viewing images, ratings, and information about available teams or opponents.
+Once a decision is made, users proceed to book the field and make a deposit payment online.
+After completing the booking, they receive a digital ticket in the form of a QR code, which is used for check-in at the venue.
+Finally, after the match, users can rate the field and other players, while also earning reward points for future use.
+Key Metrics
+To measure the performance and effectiveness of the platform, several key metrics are used.
+Gross Merchandise Value (GMV) represents the total value of transactions conducted through the platform and reflects overall business scale.
+Retention rate measures the percentage of users who return to use the platform, indicating customer satisfaction and long-term engagement.
+Fill rate evaluates the proportion of available time slots that are successfully booked, reflecting the platform’s effectiveness in optimizing field utilization.
+Match success rate measures how often players successfully find teammates or opponents through the matchmaking feature, which is a critical indicator of the platform’s unique value proposition.

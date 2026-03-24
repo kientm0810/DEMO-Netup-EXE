@@ -1,0 +1,1 @@
+export { AdminConfigForm } from "./AdminConfigForm";
