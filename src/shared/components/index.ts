@@ -2,6 +2,7 @@ export { Badge } from "./Badge";
 export { Button } from "./Button";
 export { Card } from "./Card";
 export { EmptyState } from "./EmptyState";
+export { FeatureIcon } from "./FeatureIcon";
 export { Input } from "./Input";
 export { MockQr } from "./MockQr";
 export { PageTitle } from "./PageTitle";

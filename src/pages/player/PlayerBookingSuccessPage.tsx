@@ -12,7 +12,7 @@ export function PlayerBookingSuccessPage() {
     return (
       <EmptyState
         title="Không tìm thấy booking"
-        description="Booking success chỉ hiển thị với booking hợp lệ vừa tạo."
+        description="Trang thành công chỉ hiển thị với booking hợp lệ vừa tạo."
       >
         <Link to="/player/bookings">
           <Button>Xem danh sách booking</Button>
@@ -37,47 +37,46 @@ export function PlayerBookingSuccessPage() {
         <MockQr payload={booking.qrPayload} className="max-w-[320px]" />
         <div className="rounded-2xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
           <p>
-            <strong>Booking code:</strong> {booking.bookingCode}
+            <strong>Mã booking:</strong> {booking.bookingCode}
           </p>
           <p>
             <strong>Số tiền:</strong> {formatVnd(booking.totalPriceVnd)}
           </p>
           <p>
-            <strong>Mode:</strong>{" "}
-            {booking.mode === "solo" ? "Nhóm A - Ghép lẻ" : "Nhóm B - Đặt trọn sân"}
+            <strong>Mode:</strong> {booking.mode === "solo" ? "Nhóm A - Ghép lẻ" : "Nhóm B - Đặt trọn sân"}
           </p>
         </div>
       </Card>
 
       <Card className="space-y-4">
-        <h3 className="font-heading text-xl font-semibold text-ink">Booking Summary</h3>
+        <h3 className="font-heading text-xl font-semibold text-ink">Tóm tắt giao dịch</h3>
         <div className="space-y-2 text-sm text-slate-700">
           <p>
             <strong>Session:</strong> {session?.title ?? booking.sessionId}
           </p>
           <p>
-            <strong>Court:</strong> {court?.name ?? booking.courtId}
+            <strong>Sân:</strong> {court?.name ?? booking.courtId}
           </p>
           <p>
             <strong>Thời gian:</strong> {session ? formatSessionTime(session.startsAt) : "-"}
           </p>
           <p>
-            <strong>Seats:</strong> {booking.seatsBooked}
+            <strong>Số slot:</strong> {booking.seatsBooked}
           </p>
           <p>
-            <strong>Base:</strong> {formatVnd(booking.basePriceVnd)}
+            <strong>Giá gốc:</strong> {formatVnd(booking.basePriceVnd)}
           </p>
           <p>
-            <strong>Floor fee:</strong> {formatVnd(booking.floorFeeVnd)}
+            <strong>Phí sàn:</strong> {formatVnd(booking.floorFeeVnd)}
           </p>
           <p>
-            <strong>Platform fee:</strong> {formatVnd(booking.platformFeeVnd)}
+            <strong>Phí nền tảng:</strong> {formatVnd(booking.platformFeeVnd)}
           </p>
         </div>
 
         {booking.mode === "full_court" ? (
           <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-900">
-            Split-bill QR đã sẵn sàng: trưởng nhóm có thể chụp màn hình và gửi vào Zalo/Messenger.
+            QR chia tiền đã sẵn sàng: trưởng nhóm có thể chụp màn hình và gửi vào Zalo/Messenger.
           </div>
         ) : (
           <div className="rounded-xl border border-slate-300 bg-slate-100 p-3 text-sm text-slate-800">
@@ -87,10 +86,10 @@ export function PlayerBookingSuccessPage() {
 
         <div className="flex flex-wrap gap-2">
           <Link to="/player/bookings">
-            <Button>Xem My Bookings</Button>
+            <Button>Xem booking của tôi</Button>
           </Link>
           <Link to="/player/discovery">
-            <Button variant="outline">Book thêm session</Button>
+            <Button variant="outline">Đặt thêm session</Button>
           </Link>
         </div>
       </Card>

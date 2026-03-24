@@ -5,14 +5,14 @@ export function OwnerLayout() {
   return (
     <section>
       <PageTitle
-        title="Owner Space"
-        description="Theo dõi doanh thu - occupancy, quản lý tài nguyên sân và check-in bằng booking code."
+        title="Khu vực Chủ sân"
+        description="Theo dõi doanh thu, quản lý tài nguyên sân và quét vào sân bằng mã đặt."
       />
       <RoleNav
         links={[
-          { to: "/owner/dashboard", label: "Dashboard" },
-          { to: "/owner/courts", label: "Court Management" },
-          { to: "/owner/check-in", label: "Check-in" },
+          { to: "/owner/dashboard", label: "Tổng quan" },
+          { to: "/owner/courts", label: "Quản lý sân" },
+          { to: "/owner/check-in", label: "Quét vào sân" },
         ]}
       />
       <Outlet />

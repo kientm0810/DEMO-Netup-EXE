@@ -1,7 +1,7 @@
 import { Link, useParams } from "react-router-dom";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
 import { Badge, Button, Card, EmptyState } from "../../shared/components";
-import { formatSessionTime, formatVnd } from "../../shared/utils";
+import { formatSessionTime, formatVnd, getSkillLabel, getSportLabel } from "../../shared/utils";
 
 export function PlayerSessionDetailPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
@@ -15,7 +15,7 @@ export function PlayerSessionDetailPage() {
         description="Session có thể đã kết thúc hoặc không còn trong mock data."
       >
         <Link to="/player/discovery">
-          <Button>Quay về discovery</Button>
+          <Button>Quay về trang khám phá</Button>
         </Link>
       </EmptyState>
     );
@@ -30,7 +30,7 @@ export function PlayerSessionDetailPage() {
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>
             <h2 className="font-heading text-2xl font-semibold text-ink">{session.title}</h2>
-            <p className="mt-1 text-sm text-slate-600">{court?.address ?? "Unknown location"}</p>
+            <p className="mt-1 text-sm text-slate-600">{court?.address ?? "Chưa có địa chỉ"}</p>
           </div>
           <Badge tone={session.openSlots > 0 ? "success" : "warning"}>
             {session.openSlots > 0 ? `Còn ${session.openSlots} slot` : "Đã đầy"}
@@ -39,13 +39,14 @@ export function PlayerSessionDetailPage() {
 
         <div className="grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 sm:grid-cols-2">
           <p>
-            <strong>Sport:</strong> {court?.sport}
+            <strong>Môn:</strong> {court ? getSportLabel(court.sport) : "-"}
           </p>
           <p>
             <strong>Thời gian:</strong> {formatSessionTime(session.startsAt)}
           </p>
           <p>
-            <strong>Skill range:</strong> {session.requiredSkillMin} - {session.requiredSkillMax}
+            <strong>Mức skill:</strong> {getSkillLabel(session.requiredSkillMin)} -{" "}
+            {getSkillLabel(session.requiredSkillMax)}
           </p>
           <p>
             <strong>Thời lượng:</strong> {session.durationMinutes} phút
@@ -90,7 +91,7 @@ export function PlayerSessionDetailPage() {
             <strong>Khung giờ:</strong> {session.isPeakHour ? "Cao điểm" : "Thấp điểm"}
           </p>
           <p>
-            <strong>Court rating:</strong> {court?.rating ?? "-"} / 5.0
+            <strong>Điểm đánh giá sân:</strong> {court?.rating ?? "-"} / 5.0
           </p>
         </div>
       </Card>

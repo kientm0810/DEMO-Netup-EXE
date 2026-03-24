@@ -12,7 +12,7 @@ export function PlayerBookingsPage() {
     return (
       <EmptyState
         title="Bạn chưa có booking nào"
-        description="Thử vào Discovery để đặt kèo hoặc bao sân cho nhóm."
+        description="Thử vào trang khám phá để đặt kèo hoặc bao sân cho nhóm."
       >
         <Link to="/player/discovery">
           <Button>Đi khám phá ngay</Button>
@@ -32,10 +32,10 @@ export function PlayerBookingsPage() {
             <div className="flex flex-wrap items-start justify-between gap-2">
               <div>
                 <h3 className="font-heading text-lg font-semibold text-ink">
-                  {session?.title ?? "Unknown session"}
+                  {session?.title ?? "Session không xác định"}
                 </h3>
                 <p className="text-sm text-slate-600">
-                  {court?.name ?? "Unknown court"} •{" "}
+                  {court?.name ?? "Sân không xác định"} •{" "}
                   {session ? formatSessionTime(session.startsAt) : "N/A"}
                 </p>
               </div>
@@ -49,21 +49,21 @@ export function PlayerBookingsPage() {
 
             <div className="grid gap-2 text-sm text-slate-700 sm:grid-cols-2">
               <p>
-                <strong>Mode:</strong> {booking.mode === "solo" ? "Solo" : "Full court"}
+                <strong>Loại đặt:</strong> {booking.mode === "solo" ? "Ghép lẻ" : "Bao sân"}
               </p>
               <p>
-                <strong>Seats:</strong> {booking.seatsBooked}
+                <strong>Số slot:</strong> {booking.seatsBooked}
               </p>
               <p>
-                <strong>Total:</strong> {formatVnd(booking.totalPriceVnd)}
+                <strong>Tổng tiền:</strong> {formatVnd(booking.totalPriceVnd)}
               </p>
               <p>
-                <strong>Created:</strong> {new Date(booking.createdAt).toLocaleString("vi-VN")}
+                <strong>Thời điểm tạo:</strong> {new Date(booking.createdAt).toLocaleString("vi-VN")}
               </p>
             </div>
 
             <Link to={`/player/booking-success/${booking.id}`}>
-              <Button variant="outline">Mở lại QR</Button>
+              <Button variant="outline">Mở lại mã QR</Button>
             </Link>
           </Card>
         );

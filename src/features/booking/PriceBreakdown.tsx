@@ -18,11 +18,11 @@ export function PriceBreakdown({ mode, seatsBooked, breakdown }: PriceBreakdownP
           <span>{formatVnd(breakdown.basePriceVnd)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span>Phí sàn (Floor Fee)</span>
+          <span>Phí sàn</span>
           <span>{formatVnd(breakdown.floorFeeVnd)}</span>
         </div>
         <div className="flex items-center justify-between">
-          <span>Platform fee</span>
+          <span>Phí nền tảng</span>
           <span>{formatVnd(breakdown.platformFeeVnd)}</span>
         </div>
       </div>

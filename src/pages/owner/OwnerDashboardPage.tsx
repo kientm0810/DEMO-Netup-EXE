@@ -22,15 +22,15 @@ export function OwnerDashboardPage() {
   return (
     <section className="space-y-4 fade-up">
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-        <StatCard label="Revenue Today" value={formatVnd(state.ownerAnalytics.revenue.todayVnd)} />
-        <StatCard label="Revenue Week" value={formatVnd(state.ownerAnalytics.revenue.weeklyVnd)} />
+        <StatCard label="Doanh thu hôm nay" value={formatVnd(state.ownerAnalytics.revenue.todayVnd)} />
+        <StatCard label="Doanh thu tuần" value={formatVnd(state.ownerAnalytics.revenue.weeklyVnd)} />
         <StatCard
-          label="Occupancy Today"
+          label="Tỷ lệ lấp đầy hôm nay"
           value={`${state.ownerAnalytics.occupancy.todayPercent}%`}
-          helper={`Peak hours: ${state.ownerAnalytics.occupancy.peakHours}`}
+          helper={`Giờ cao điểm: ${state.ownerAnalytics.occupancy.peakHours}`}
         />
         <StatCard
-          label="Pending Payout"
+          label="Số dư chờ rút"
           value={formatVnd(state.ownerAnalytics.revenue.pendingPayoutVnd)}
           helper="Đã trừ 10% chiết khấu mock"
         />
@@ -38,7 +38,7 @@ export function OwnerDashboardPage() {
 
       <div className="grid gap-4 lg:grid-cols-[1fr,1fr]">
         <Card className="space-y-3">
-          <h3 className="font-heading text-lg font-semibold text-ink">Weekly Occupancy Trend</h3>
+          <h3 className="font-heading text-lg font-semibold text-ink">Biểu đồ lấp đầy theo tuần</h3>
           <div className="space-y-3">
             {state.ownerAnalytics.trend.map((point) => (
               <div key={point.label} className="space-y-1">
@@ -58,7 +58,7 @@ export function OwnerDashboardPage() {
         </Card>
 
         <Card className="space-y-3">
-          <h3 className="font-heading text-lg font-semibold text-ink">Recent Bookings</h3>
+          <h3 className="font-heading text-lg font-semibold text-ink">Booking mới gần đây</h3>
           {recentBookings.map((booking) => {
             const session = state.sessions.find((item) => item.id === booking.sessionId);
             return (

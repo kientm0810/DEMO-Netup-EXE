@@ -1,4 +1,5 @@
 import { Input, Select } from "../../shared/components";
+import { getSkillLabel, getSportLabel, skillOptions, sportOptions } from "../../shared/utils";
 
 export interface DiscoveryFilterState {
   search: string;
@@ -17,34 +18,30 @@ export function DiscoveryFilters({ value, onChange }: DiscoveryFiltersProps) {
   return (
     <div className="grid gap-3 rounded-2xl border border-slate-200 bg-white/80 p-4 backdrop-blur sm:grid-cols-2 lg:grid-cols-5">
       <Input
-        label="Search court/session"
-        placeholder="e.g. Linh Trung, Football"
+        label="Tìm sân / session"
+        placeholder="Ví dụ: Linh Trung, Cầu lông"
         value={value.search}
         onChange={(event) => onChange({ ...value, search: event.target.value })}
       />
 
       <Select
-        label="Sport"
+        label="Môn thể thao"
         value={value.sport}
         onChange={(event) => onChange({ ...value, sport: event.target.value })}
-        options={[
-          { label: "All sports", value: "All" },
-          { label: "Badminton", value: "Badminton" },
-          { label: "Football", value: "Football" },
-          { label: "Tennis", value: "Tennis" },
-        ]}
+        options={sportOptions.map((sport) => ({
+          label: getSportLabel(sport),
+          value: sport,
+        }))}
       />
 
       <Select
-        label="Skill level"
+        label="Mức kỹ năng"
         value={value.skill}
         onChange={(event) => onChange({ ...value, skill: event.target.value })}
-        options={[
-          { label: "All levels", value: "All" },
-          { label: "Beginner", value: "Beginner" },
-          { label: "Intermediate", value: "Intermediate" },
-          { label: "Advanced", value: "Advanced" },
-        ]}
+        options={skillOptions.map((skill) => ({
+          label: getSkillLabel(skill),
+          value: skill,
+        }))}
       />
 
       <label className="flex items-end pb-2">
@@ -67,7 +64,7 @@ export function DiscoveryFilters({ value, onChange }: DiscoveryFiltersProps) {
             checked={value.recommendedOnly}
             onChange={(event) => onChange({ ...value, recommendedOnly: event.target.checked })}
           />
-          Chỉ show theo level của tôi
+          Chỉ hiển thị theo level của tôi
         </span>
       </label>
     </div>

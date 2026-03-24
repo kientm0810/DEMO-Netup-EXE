@@ -1,0 +1,39 @@
+<svg width="1600" height="900" viewBox="0 0 1600 900" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1600" y2="900" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1F2937"/>
+      <stop offset="1" stop-color="#7F1D1D"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(1210 250) rotate(130) scale(560 560)">
+      <stop stop-color="#FCA5A5" stop-opacity="0.4"/>
+      <stop offset="1" stop-color="#FCA5A5" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect width="1600" height="900" fill="url(#bg)"/>
+  <rect width="1600" height="900" fill="url(#glow)"/>
+
+  <g opacity="0.18">
+    <circle cx="140" cy="140" r="4" fill="white"/>
+    <circle cx="260" cy="200" r="3" fill="white"/>
+    <circle cx="460" cy="140" r="4" fill="white"/>
+    <circle cx="620" cy="220" r="3" fill="white"/>
+    <circle cx="860" cy="180" r="4" fill="white"/>
+    <circle cx="1100" cy="230" r="3" fill="white"/>
+    <circle cx="1360" cy="160" r="4" fill="white"/>
+  </g>
+
+  <g transform="translate(970 280) rotate(-16)">
+    <path d="M132 8L188 86H76L132 8Z" fill="#F8FAFC"/>
+    <path d="M132 8V86" stroke="#94A3B8" stroke-width="6"/>
+    <path d="M100 50L164 50" stroke="#94A3B8" stroke-width="6"/>
+    <path d="M112 30L152 30" stroke="#94A3B8" stroke-width="6"/>
+    <rect x="112" y="86" width="40" height="92" rx="20" fill="#E2E8F0"/>
+    <rect x="122" y="164" width="20" height="44" rx="10" fill="#94A3B8"/>
+  </g>
+
+  <g opacity="0.22">
+    <path d="M-80 690C210 580 520 560 840 650C1110 726 1360 714 1680 590" stroke="white" stroke-width="4" stroke-dasharray="10 12"/>
+    <path d="M-120 760C170 650 480 630 800 710C1080 780 1360 770 1680 640" stroke="white" stroke-width="3" stroke-dasharray="8 12"/>
+  </g>
+</svg>

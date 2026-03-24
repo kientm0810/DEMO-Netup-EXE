@@ -1,5 +1,5 @@
 # `src/pages/assistant`
 
-Contains assistant/chatbot demo page for:
-- Feature Q&A using local context/knowledge.
-- Session recommendation based on user inputs.
+Chứa trang chatbot demo:
+- Hỏi đáp tính năng NetUp theo context nội bộ.
+- Gợi ý session theo nhu cầu người dùng (môn, khu vực, ngân sách, level).

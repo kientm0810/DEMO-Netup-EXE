@@ -5,13 +5,13 @@ export function AdminLayout() {
   return (
     <section>
       <PageTitle
-        title="Admin Space"
-        description="Điều phối platform fee, floor fee, matching radius và các rule vận hành mock."
+        title="Khu vực Quản trị"
+        description="Điều phối quy tắc nền tảng: phí nền tảng, phí sàn, bán kính ghép kèo và cấu hình rủi ro."
       />
       <RoleNav
         links={[
-          { to: "/admin/dashboard", label: "Dashboard" },
-          { to: "/admin/config", label: "Config" },
+          { to: "/admin/dashboard", label: "Bảng điều khiển" },
+          { to: "/admin/config", label: "Cấu hình hệ thống" },
         ]}
       />
       <Outlet />

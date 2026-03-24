@@ -6,6 +6,8 @@ import {
   calculateAssessmentScore,
   classifySkillLevel,
   formatVnd,
+  getSkillLabel,
+  getSportLabel,
   recommendSessions,
 } from "../../shared/utils";
 
@@ -74,9 +76,9 @@ export function PlayerAssessmentPage() {
   return (
     <section className="grid gap-4 lg:grid-cols-[1.1fr,0.9fr] fade-up">
       <Card className="space-y-4">
-        <h2 className="font-heading text-xl font-semibold text-ink">Self Assessment Form</h2>
+        <h2 className="font-heading text-xl font-semibold text-ink">Biểu mẫu tự đánh giá năng lực</h2>
         <p className="text-sm text-slate-600">
-          Điền nhanh thông tin để phân cấp trình độ và nhận gợi ý sân/session phù hợp hơn.
+          Điền nhanh thông tin để hệ thống phân cấp level và gợi ý session phù hợp hơn.
         </p>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -84,12 +86,15 @@ export function PlayerAssessmentPage() {
             label="Môn chính"
             value={form.preferredSport}
             onChange={(event) =>
-              setForm((prev) => ({ ...prev, preferredSport: event.target.value as AssessmentFormState["preferredSport"] }))
+              setForm((prev) => ({
+                ...prev,
+                preferredSport: event.target.value as AssessmentFormState["preferredSport"],
+              }))
             }
             options={[
-              { label: "Badminton", value: "Badminton" },
-              { label: "Football", value: "Football" },
-              { label: "Tennis", value: "Tennis" },
+              { label: getSportLabel("Badminton"), value: "Badminton" },
+              { label: getSportLabel("Football"), value: "Football" },
+              { label: getSportLabel("Tennis"), value: "Tennis" },
             ]}
           />
 
@@ -134,7 +139,7 @@ export function PlayerAssessmentPage() {
           />
 
           <Input
-            label="Stamina (1-5)"
+            label="Thể lực (1-5)"
             type="number"
             min={1}
             max={5}
@@ -145,7 +150,7 @@ export function PlayerAssessmentPage() {
           />
 
           <Input
-            label="Technique (1-5)"
+            label="Kỹ thuật (1-5)"
             type="number"
             min={1}
             max={5}
@@ -156,7 +161,7 @@ export function PlayerAssessmentPage() {
           />
 
           <Input
-            label="Tactical (1-5)"
+            label="Chiến thuật (1-5)"
             type="number"
             min={1}
             max={5}
@@ -168,19 +173,19 @@ export function PlayerAssessmentPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button onClick={handleSave}>Lưu đánh giá</Button>
+          <Button onClick={handleSave}>Lưu kết quả đánh giá</Button>
           <Link to="/player/discovery">
-            <Button variant="outline">Xem gợi ý ở Discovery</Button>
+            <Button variant="outline">Xem gợi ý ở trang khám phá</Button>
           </Link>
         </div>
       </Card>
 
       <Card className="space-y-4">
         <h3 className="font-heading text-lg font-semibold text-ink">Kết quả phân cấp</h3>
-        <Badge tone="info">Score: {score}</Badge>
-        <Badge tone="success">Level đề xuất: {level}</Badge>
+        <Badge tone="info">Điểm tổng: {score}</Badge>
+        <Badge tone="success">Level đề xuất: {getSkillLabel(level)}</Badge>
         <p className="text-sm text-slate-600">
-          Level này được dùng để highlight session phù hợp trong Discovery và hỗ trợ chatbot tư vấn.
+          Level này được dùng để AI làm nổi bật session phù hợp trong trang khám phá và chatbot tư vấn.
         </p>
 
         <div className="space-y-2">

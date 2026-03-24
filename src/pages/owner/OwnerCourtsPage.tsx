@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
 import { Badge, Button, Card, EmptyState } from "../../shared/components";
-import { formatVnd } from "../../shared/utils";
+import { formatVnd, getSportLabel } from "../../shared/utils";
 
 export function OwnerCourtsPage() {
   const { state, currentOwnerId } = useAppStore();
@@ -15,8 +15,8 @@ export function OwnerCourtsPage() {
   if (ownerCourts.length === 0) {
     return (
       <EmptyState
-        title="Chưa có court nào"
-        description="Owner chưa khai báo tài nguyên sân trong mock data."
+        title="Chưa có sân nào"
+        description="Chủ sân chưa khai báo tài nguyên sân trong mock data."
       />
     );
   }
@@ -31,12 +31,14 @@ export function OwnerCourtsPage() {
               <p className="text-sm text-slate-600">{court.address}</p>
             </div>
             <div className="flex flex-wrap gap-2">
-              <Badge tone={court.status === "active" ? "success" : "warning"}>{court.status}</Badge>
-              <Badge tone="info">{court.sport}</Badge>
+              <Badge tone={court.status === "active" ? "success" : "warning"}>
+                {court.status === "active" ? "Đang hoạt động" : "Bảo trì"}
+              </Badge>
+              <Badge tone="info">{getSportLabel(court.sport)}</Badge>
               {court.isPickupEnabled ? (
-                <Badge tone="success">Sân ghép lẻ</Badge>
+                <Badge tone="success">Cho phép ghép lẻ</Badge>
               ) : (
-                <Badge tone="neutral">Chỉ đặt nhóm</Badge>
+                <Badge tone="neutral">Chỉ đặt theo nhóm</Badge>
               )}
             </div>
           </div>
@@ -46,13 +48,13 @@ export function OwnerCourtsPage() {
               <strong>Giá cơ bản:</strong> {formatVnd(court.basePriceVnd)}
             </p>
             <p>
-              <strong>Rating:</strong> {court.rating} / 5
+              <strong>Đánh giá:</strong> {court.rating} / 5
             </p>
             <p>
-              <strong>Dynamic pricing:</strong> +15% cuối tuần, -10% sáng ngày thường
+              <strong>Giá động:</strong> +15% cuối tuần, -10% sáng ngày thường
             </p>
             <p>
-              <strong>Amenities:</strong> {court.amenities.join(", ")}
+              <strong>Tiện ích:</strong> {court.amenities.join(", ")}
             </p>
           </div>
 
@@ -60,12 +62,12 @@ export function OwnerCourtsPage() {
             <Button variant="outline" onClick={() => setSelectedCourtId(court.id)}>
               Chỉnh lịch offline
             </Button>
-            <Button variant="ghost">Đẩy promo giờ trống</Button>
+            <Button variant="ghost">Đẩy ưu đãi giờ trống</Button>
           </div>
 
           {selectedCourtId === court.id ? (
             <div className="rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-900">
-              Mock action: đã khóa 1 slot offline và đồng bộ lên app để tránh overbooking.
+              Mô phỏng thao tác: đã khóa 1 slot offline và đồng bộ lên app để tránh overbooking.
             </div>
           ) : null}
         </Card>

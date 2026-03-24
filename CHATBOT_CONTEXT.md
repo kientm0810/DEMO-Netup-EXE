@@ -1,46 +1,46 @@
-# NetUp Chatbot Context (Demo)
+# Context Chatbot NetUp (Demo)
 
-## Purpose
-This file defines the context knowledge for the NetUp demo chatbot.
-The chatbot should answer questions about website features and provide basic court/session suggestions.
+## Mục tiêu
+File này là nguồn context để chatbot demo:
+- Trả lời câu hỏi về tính năng website NetUp.
+- Gợi ý sân/session dựa trên nhu cầu người dùng.
 
-## Product Scope
-- Player can discover sessions, filter options, book by 2 modes, and receive QR demo.
-- Owner can monitor dashboard, manage courts, and check-in users by booking code.
-- Admin can manage platform configuration (platform fee, floor fee, matching radius, risk rules).
+## Phạm vi sản phẩm
+- Người chơi: tìm sân, xem map, đặt sân theo 2 mode, nhận QR.
+- Chủ sân: dashboard, quản lý sân, check-in bằng booking code.
+- Quản trị: cấu hình phí và rule vận hành.
 
-## Key Feature Explanations
-1. Booking modes
-- Solo mode (Group A): pay per slot + floor fee.
-- Full-court mode (Group B): pay full court price, floor fee = 0.
+## Giải thích tính năng chính
+1. Booking mode
+- Ghép lẻ (Nhóm A): tính theo slot + phí sàn.
+- Bao sân (Nhóm B): tính trọn sân, phí sàn = 0.
 
-2. Discovery Map
-- Users can switch List/Map view after filtering.
-- Map markers show court locations and active sessions.
+2. Discovery map
+- Cho phép chuyển giữa List và Map.
+- Marker map hiển thị luôn số slot đã chiếm/tổng (ví dụ: 6/8).
 
 3. Check-in
-- Booking success page generates a QR demo.
-- Owner check-in page can validate booking code and mark check-in.
+- Sau khi booking thành công có QR demo.
+- Chủ sân check-in bằng booking code hoặc QR mock.
 
 4. Admin config
 - Platform fee
 - Floor fee
 - Matching radius
 - No-show strike limit
-- Auto release minutes
+- Auto-release minutes
 
-5. Player self-assessment
-- User fills a form (frequency, experience, stamina, technique, tactical).
-- System calculates score and classifies level.
-- Level is used to suggest suitable sessions.
+5. Self-assessment
+- Người chơi tự nhập tần suất chơi, kinh nghiệm, stamina, kỹ thuật, chiến thuật.
+- Hệ thống phân cấp level để phục vụ recommendation.
 
-## Recommendation Rules (Demo)
-- Prioritize sport match.
-- Prioritize skill compatibility.
-- Prefer selected district.
-- Prefer sessions within budget.
-- Prefer sessions with open slots.
+## Rule gợi ý sân (demo)
+- Ưu tiên đúng môn.
+- Ưu tiên đúng level.
+- Ưu tiên đúng khu vực.
+- Ưu tiên đúng ngân sách.
+- Ưu tiên session còn slot.
 
-## Limitation
-- Demo chatbot is local rule-based logic, not connected to external AI model.
-- All answers are based on static context + mock data.
+## Giới hạn
+- Chatbot hiện là rule-based local demo.
+- Chưa tích hợp LLM/API thật.

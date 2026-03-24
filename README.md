@@ -1,38 +1,41 @@
 # NetUp Frontend MVP Demo
 
-## 1) Project Overview
-This project is a frontend MVP demo for NetUp.  
-Goal: show product UI and key user flows with local mock data only.
+## 1) Tổng quan dự án
+Đây là bản demo frontend MVP cho NetUp, tập trung vào:
+- Trình bày luồng sản phẩm rõ ràng cho nhà đầu tư.
+- Click được end-to-end cho 3 vai trò: Người chơi, Chủ sân, Quản trị.
+- Làm nổi bật điểm khác biệt AI (trợ lý + gợi ý sân theo nhu cầu).
 
-This version includes:
-- Player / Owner / Admin demo flows
-- Discovery List + Map view
-- Gray-Red visual theme
-- Demo chatbot for feature Q&A and court suggestions
-- Player self-assessment for skill-level recommendation
+## 2) Mục tiêu bản demo hiện tại
+- Dùng tiếng Việt tối đa ở giao diện.
+- UX dễ hiểu khi nhìn lướt.
+- Có hình ảnh minh họa và icon để tăng trực quan.
+- Bản đồ hiển thị trạng thái slot theo dạng đã chiếm/tổng (ví dụ: `6/8`).
+- AI feature được đặt ở vị trí nổi bật để nhà đầu tư thấy ngay.
 
-## 2) Problem Summary (from requirement files)
-From `pasted.txt`, `pasted1.txt`, and `requirement NetUp.docx`, core target is:
-- Help players find sessions quickly, book with transparent pricing, and check-in by QR.
-- Help owners manage courts, occupancy, and check-in flow.
-- Help admins configure platform rules (fee, matching radius, risk rules).
+## 3) Những phần đã được nâng cấp
+- Landing page theo hướng “investor-friendly”:
+  - Hero có ảnh minh họa lớn.
+  - Thẻ vai trò có icon.
+  - Khối highlight riêng cho AI.
+- Discovery:
+  - Chế độ List / Map.
+  - Marker map hiển thị trực tiếp số slot đã chiếm.
+  - Tô nổi bật điểm được AI đề xuất theo level người chơi.
+- AI Chatbot:
+  - Trả lời theo context file + knowledge base mock.
+  - Gợi ý session theo môn, khu vực, ngân sách, level.
+  - Có panel nhập nhanh để demo logic AI với nhà đầu tư.
+- Self-assessment:
+  - Người chơi tự đánh giá năng lực.
+  - Hệ thống phân cấp level để phục vụ recommendation.
 
-## 3) New Update Scope (2026-03-24)
-Implemented updates requested after first MVP:
-- Add map option in Discovery after filtering (`List` / `Map` switch).
-- Change primary design language to Gray-Red.
-- Add chatbot demo with context file and recommendation logic.
-- Add player self-assessment form to classify level and suggest suitable sessions.
-- Update README + add dedicated requirement/context docs for future reference.
-
-## 4) Tech Stack
-- React
-- Vite
-- TypeScript
+## 4) Stack kỹ thuật
+- React + Vite + TypeScript
 - Tailwind CSS
 - React Router
-- Local mock data (TS objects)
-- React Leaflet + Leaflet (for map)
+- React Leaflet + Leaflet (map)
+- Mock data local (TS object)
 
 ## 5) Routing
 - `/`
@@ -50,25 +53,9 @@ Implemented updates requested after first MVP:
 - `/assistant/chatbot`
 - `*`
 
-## 6) Folder Structure
-```text
-src/
-  app/
-  pages/
-    player/
-    owner/
-    admin/
-    assistant/
-  features/
-  entities/
-  mocks/
-  shared/
-```
-
-## 7) Mock Data Strategy
-Main mock datasets:
+## 6) Dữ liệu mock
 - `players.ts`
-- `courts.ts` (now includes lat/lng for map)
+- `courts.ts` (có tọa độ lat/lng cho map)
 - `sessions.ts`
 - `bookings.ts`
 - `ownerAnalytics.ts`
@@ -76,22 +63,18 @@ Main mock datasets:
 - `playerAssessments.ts`
 - `chatbotKnowledge.ts`
 
-All pages read from one local app store (`AppStoreProvider`) so data is consistent across flows.
+Toàn bộ state dùng chung qua `AppStoreProvider` để dữ liệu đồng bộ giữa các trang.
 
-## 8) Chatbot Context
-- Context doc file: `CHATBOT_CONTEXT.md`
-- Product update notes: `REQUIREMENTS_UPDATE_2026-03-24.md`
+## 7) File tài liệu quan trọng
+- `CHATBOT_CONTEXT.md`: context hướng dẫn cho chatbot demo.
+- `REQUIREMENTS_UPDATE_2026-03-24.md`: log yêu cầu update và phạm vi đã làm.
 
-Chatbot capabilities in demo:
-- Answer feature questions using local knowledge base
-- Suggest suitable sessions based on user inputs (sport, district, budget, level)
-
-## 9) Run Project
-Requirements:
+## 8) Cách chạy
+Yêu cầu:
 - Node.js 18+
 - npm 9+
 
-Commands:
+Lệnh:
 ```bash
 npm install
 npm run dev
@@ -103,9 +86,20 @@ npm run build
 npm run preview
 ```
 
-## 10) Assumptions
-- No real backend/database/auth.
-- Current user context is mock (`player-001`, `owner-001`).
-- QR is visual demo only.
-- Chatbot is rule-based demo (local context), not an LLM integration.
-- Assessment level is for recommendation only, not for hard access control.
+## 9) Assumption
+- Không có backend/database/auth thật.
+- QR chỉ là mock hiển thị.
+- Chatbot là rule-based demo theo context nội bộ (không gọi LLM thật).
+- Kết quả self-assessment dùng để gợi ý, chưa phải cơ chế kiểm soát truy cập.
+
+## 10) Ảnh nền post tuyển slot
+- Tất cả post ở Discovery có ảnh nền theo từng môn.
+- Post tuyển slot trống (session cho phép ghép lẻ và còn slot) có thêm nhãn nổi bật.
+- Bộ ảnh nằm tại: `src/shared/assets/post-backgrounds/`
+- File mapping chi tiết nằm tại: `src/shared/assets/post-backgrounds/README.md`
+
+## 11) Vị trí người dùng và chỉ đường (demo)
+- Discovery có nút lấy vị trí người dùng từ trình duyệt.
+- Nếu có vị trí, mỗi post hiển thị khoảng cách ở bên trái tên địa điểm.
+- Có nút mở đường đi Google Maps theo nhiều phương tiện (xe máy/ô tô, đi bộ, xe đạp, công cộng).
+- Khoảng cách trong app là ước lượng demo theo tọa độ GPS.

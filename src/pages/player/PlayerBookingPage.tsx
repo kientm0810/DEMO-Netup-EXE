@@ -21,10 +21,10 @@ export function PlayerBookingPage() {
     return (
       <EmptyState
         title="Không thể tạo booking"
-        description="Session không hợp lệ hoặc đã bị xoá khỏi mock data."
+        description="Session không hợp lệ hoặc đã bị xóa khỏi mock data."
       >
         <Link to="/player/discovery">
-          <Button>Quay lại discovery</Button>
+          <Button>Quay lại khám phá</Button>
         </Link>
       </EmptyState>
     );
@@ -63,13 +63,13 @@ export function PlayerBookingPage() {
   return (
     <section className="grid gap-4 lg:grid-cols-[1.1fr,0.9fr] fade-up">
       <Card className="space-y-4">
-        <h2 className="font-heading text-xl font-semibold text-ink">Booking confirmation</h2>
+        <h2 className="font-heading text-xl font-semibold text-ink">Xác nhận đặt sân</h2>
         <div className="rounded-2xl bg-slate-50 p-4 text-sm text-slate-700">
           <p>
             <strong>Session:</strong> {session.title}
           </p>
           <p>
-            <strong>Court:</strong> {court.name}
+            <strong>Sân:</strong> {court.name}
           </p>
           <p>
             <strong>Thời gian:</strong> {formatSessionTime(session.startsAt)}
@@ -94,8 +94,8 @@ export function PlayerBookingPage() {
         )}
 
         <div className="flex flex-wrap gap-2">
-          <Badge tone="info">Platform fee {Math.round(state.adminConfig.platformFeeRate * 100)}%</Badge>
-          <Badge tone="neutral">Floor fee {state.adminConfig.floorFeeVnd.toLocaleString("vi-VN")}đ</Badge>
+          <Badge tone="info">Phí nền tảng: {Math.round(state.adminConfig.platformFeeRate * 100)}%</Badge>
+          <Badge tone="neutral">Phí sàn: {state.adminConfig.floorFeeVnd.toLocaleString("vi-VN")}đ</Badge>
         </div>
 
         {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}

@@ -1,8 +1,15 @@
 import { useMemo, useState } from "react";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
-import { Badge, Button, Card, Input, Select } from "../../shared/components";
-import { formatVnd, recommendSessions, type SessionRecommendation } from "../../shared/utils";
 import { chatbotKnowledge, chatbotQuickPrompts } from "../../mocks";
+import { Badge, Button, Card, FeatureIcon, Input, Select } from "../../shared/components";
+import {
+  formatVnd,
+  getSkillLabel,
+  getSportLabel,
+  recommendSessions,
+  type SessionRecommendation,
+} from "../../shared/utils";
+import aiHighlight from "../../shared/assets/ai-highlight.svg";
 
 interface ChatMessage {
   id: string;
@@ -29,7 +36,6 @@ function findBestKnowledgeReply(question: string): string {
     const score = item.keywords.reduce((sum, keyword) => {
       return normalized.includes(keyword.toLowerCase()) ? sum + 1 : sum;
     }, 0);
-
     if (score > bestScore) {
       bestScore = score;
       bestAnswer = item.answer;
@@ -38,7 +44,7 @@ function findBestKnowledgeReply(question: string): string {
 
   return (
     bestAnswer ||
-    "Mình chưa có rule rõ cho câu này trong context demo. Bạn có thể hỏi về booking mode, check-in QR, admin config, map view hoặc self-assessment."
+    "Mình chưa có quy tắc rõ cho câu này trong context demo. Bạn có thể hỏi về chế độ đặt sân, check-in QR, slot trên map hoặc cấu hình quản trị."
   );
 }
 
@@ -46,11 +52,10 @@ export function AssistantChatbotPage() {
   const { state, currentPlayerAssessment } = useAppStore();
   const [question, setQuestion] = useState("");
   const [messages, setMessages] = useState<ChatMessage[]>([
-    {
-      id: "init-bot",
-      role: "bot",
-      text: "Chào bạn, mình là NetUp Assistant (demo). Mình có thể giải thích tính năng web và gợi ý sân theo nhu cầu.",
-    },
+    createMessage(
+      "bot",
+      "Chào bạn, mình là NetUp AI Assistant. Mình có thể giải thích tính năng và đề xuất sân dựa trên nhu cầu đầu vào.",
+    ),
   ]);
 
   const [suggestionInput, setSuggestionInput] = useState({
@@ -60,7 +65,10 @@ export function AssistantChatbotPage() {
     soloOnly: true,
   });
 
-  const districts = useMemo(() => Array.from(new Set(state.courts.map((court) => court.district))), [state.courts]);
+  const districts = useMemo(
+    () => Array.from(new Set(state.courts.map((court) => court.district))),
+    [state.courts],
+  );
 
   const pushMessage = (message: ChatMessage) => {
     setMessages((prev) => [...prev, message]);
@@ -73,20 +81,26 @@ export function AssistantChatbotPage() {
     pushMessage(createMessage("user", trimmed));
     const normalized = trimmed.toLowerCase();
     const suggestionIntent =
-      normalized.includes("goi y") ||
       normalized.includes("gợi ý") ||
-      normalized.includes("de xuat") ||
+      normalized.includes("goi y") ||
       normalized.includes("đề xuất") ||
+      normalized.includes("de xuat") ||
       normalized.includes("recommend") ||
       normalized.includes("suggest");
 
     if (suggestionIntent) {
       const sport =
+        normalized.includes("cầu lông") ||
+        normalized.includes("cau long") ||
         normalized.includes("badminton")
           ? "Badminton"
-          : normalized.includes("football")
+          : normalized.includes("bóng đá") ||
+              normalized.includes("bong da") ||
+              normalized.includes("football")
             ? "Football"
-            : normalized.includes("tennis")
+            : normalized.includes("quần vợt") ||
+                normalized.includes("quan vot") ||
+                normalized.includes("tennis")
               ? "Tennis"
               : "All";
       const matchedDistrict =
@@ -110,7 +124,7 @@ export function AssistantChatbotPage() {
         pushMessage(
           createMessage(
             "bot",
-            "Mình đã đọc yêu cầu và chọn ra các session phù hợp nhất theo câu hỏi của bạn:",
+            "Mình đã phân tích nhu cầu và chọn ra các session phù hợp nhất:",
             recommendations,
           ),
         );
@@ -118,7 +132,7 @@ export function AssistantChatbotPage() {
         pushMessage(
           createMessage(
             "bot",
-            "Mình chưa tìm thấy session đúng tiêu chí trong câu hỏi này. Bạn thử đổi khu vực hoặc ngân sách.",
+            "Mình chưa tìm thấy session phù hợp với yêu cầu hiện tại. Bạn thử nới khu vực hoặc tăng ngân sách nhé.",
           ),
         );
       }
@@ -126,8 +140,7 @@ export function AssistantChatbotPage() {
       return;
     }
 
-    const answer = findBestKnowledgeReply(trimmed);
-    pushMessage(createMessage("bot", answer));
+    pushMessage(createMessage("bot", findBestKnowledgeReply(trimmed)));
     setQuestion("");
   };
 
@@ -147,7 +160,7 @@ export function AssistantChatbotPage() {
     pushMessage(
       createMessage(
         "user",
-        `Gợi ý sân cho môn ${suggestionInput.sport}, ngân sách ${suggestionInput.budget.toLocaleString("vi-VN")}đ`,
+        `Nhờ AI gợi ý sân cho môn ${getSportLabel(suggestionInput.sport)}, ngân sách ${suggestionInput.budget.toLocaleString("vi-VN")}đ`,
       ),
     );
 
@@ -155,24 +168,34 @@ export function AssistantChatbotPage() {
       pushMessage(
         createMessage(
           "bot",
-          "Mình chưa tìm được session phù hợp với tiêu chí hiện tại. Bạn thử nới khu vực hoặc tăng ngân sách nhé.",
+          "Mình chưa tìm được session phù hợp. Bạn có thể đổi quận hoặc tăng ngân sách để AI lọc tốt hơn.",
         ),
       );
       return;
     }
 
-    pushMessage(createMessage("bot", "Đây là các session mình đề xuất cho bạn:", recommendations));
+    pushMessage(createMessage("bot", "Đây là các session AI đề xuất cho bạn:", recommendations));
   };
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1.2fr,0.8fr] fade-up">
-      <Card className="flex h-[640px] flex-col">
-        <h2 className="font-heading text-xl font-semibold text-ink">NetUp Chatbot Demo</h2>
-        <p className="mt-1 text-sm text-slate-600">
-          Context file: <code>CHATBOT_CONTEXT.md</code> + knowledge base local trong mock data.
-        </p>
+      <Card className="flex h-[680px] flex-col">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h2 className="font-heading text-xl font-semibold text-ink">Demo Trợ lý AI NetUp</h2>
+            <p className="mt-1 text-sm text-slate-600">
+              Nguồn context: <code>CHATBOT_CONTEXT.md</code> + dữ liệu mock thực tế.
+            </p>
+          </div>
+          <Badge tone="success">
+            <span className="inline-flex items-center gap-1">
+              <FeatureIcon name="ai" className="h-4 w-4" />
+              Điểm nhấn AI cho nhà đầu tư
+            </span>
+          </Badge>
+        </div>
 
-        <div className="mt-4 flex-1 space-y-3 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3">
+        <div className="flex-1 space-y-3 overflow-y-auto rounded-2xl border border-slate-200 bg-slate-50 p-3">
           {messages.map((message) => (
             <div
               key={message.id}
@@ -200,7 +223,7 @@ export function AssistantChatbotPage() {
 
         <div className="mt-3 space-y-2">
           <Input
-            placeholder="Hỏi về tính năng hoặc cách dùng NetUp..."
+            placeholder="Hỏi về tính năng NetUp hoặc yêu cầu AI gợi ý sân..."
             value={question}
             onChange={(event) => setQuestion(event.target.value)}
             onKeyDown={(event) => {
@@ -220,54 +243,66 @@ export function AssistantChatbotPage() {
         </div>
       </Card>
 
-      <Card className="space-y-3">
-        <h3 className="font-heading text-lg font-semibold text-ink">Quick Suggestion Panel</h3>
-        <Select
-          label="Sport"
-          value={suggestionInput.sport}
-          onChange={(event) => setSuggestionInput((prev) => ({ ...prev, sport: event.target.value }))}
-          options={[
-            { label: "All", value: "All" },
-            { label: "Badminton", value: "Badminton" },
-            { label: "Football", value: "Football" },
-            { label: "Tennis", value: "Tennis" },
-          ]}
+      <div className="space-y-4">
+        <img
+          src={aiHighlight}
+          alt="Minh họa AI gợi ý sân theo nhu cầu đầu vào"
+          className="w-full rounded-2xl border border-slate-200"
         />
-        <Select
-          label="District"
-          value={suggestionInput.district}
-          onChange={(event) => setSuggestionInput((prev) => ({ ...prev, district: event.target.value }))}
-          options={[{ label: "Any", value: "" }, ...districts.map((district) => ({ label: district, value: district }))]}
-        />
-        <Input
-          label="Budget/session (VND)"
-          type="number"
-          min={50000}
-          step={10000}
-          value={suggestionInput.budget}
-          onChange={(event) =>
-            setSuggestionInput((prev) => ({ ...prev, budget: Number(event.target.value) || 0 }))
-          }
-        />
-        <label className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
-          <input
-            type="checkbox"
-            className="h-4 w-4 accent-ink"
-            checked={suggestionInput.soloOnly}
+
+        <Card className="space-y-3">
+          <h3 className="font-heading text-lg font-semibold text-ink">Bảng nhập nhanh để AI gợi ý</h3>
+          <Select
+            label="Môn thể thao"
+            value={suggestionInput.sport}
+            onChange={(event) => setSuggestionInput((prev) => ({ ...prev, sport: event.target.value }))}
+            options={[
+              { label: getSportLabel("All"), value: "All" },
+              { label: getSportLabel("Badminton"), value: "Badminton" },
+              { label: getSportLabel("Football"), value: "Football" },
+              { label: getSportLabel("Tennis"), value: "Tennis" },
+            ]}
+          />
+          <Select
+            label="Khu vực"
+            value={suggestionInput.district}
+            onChange={(event) => setSuggestionInput((prev) => ({ ...prev, district: event.target.value }))}
+            options={[
+              { label: "Tất cả khu vực", value: "" },
+              ...districts.map((district) => ({ label: district, value: district })),
+            ]}
+          />
+          <Input
+            label="Ngân sách mỗi session (VND)"
+            type="number"
+            min={50000}
+            step={10000}
+            value={suggestionInput.budget}
             onChange={(event) =>
-              setSuggestionInput((prev) => ({ ...prev, soloOnly: event.target.checked }))
+              setSuggestionInput((prev) => ({ ...prev, budget: Number(event.target.value) || 0 }))
             }
           />
-          Chỉ gợi ý session có ghép lẻ
-        </label>
-        {currentPlayerAssessment ? (
-          <Badge tone="info">Áp dụng level: {currentPlayerAssessment.calculatedLevel}</Badge>
-        ) : (
-          <Badge tone="warning">Chưa có level, nên điền self-assessment trước</Badge>
-        )}
-
-        <Button onClick={suggestCourts}>Gợi ý sân</Button>
-      </Card>
+          <label className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-sm text-slate-700">
+            <input
+              type="checkbox"
+              className="h-4 w-4 accent-ink"
+              checked={suggestionInput.soloOnly}
+              onChange={(event) =>
+                setSuggestionInput((prev) => ({ ...prev, soloOnly: event.target.checked }))
+              }
+            />
+            Chỉ gợi ý session có ghép lẻ
+          </label>
+          {currentPlayerAssessment ? (
+            <Badge tone="info">
+              AI đang áp dụng level: {getSkillLabel(currentPlayerAssessment.calculatedLevel)}
+            </Badge>
+          ) : (
+            <Badge tone="warning">Bạn chưa có level, nên vào phần tự đánh giá trước</Badge>
+          )}
+          <Button onClick={suggestCourts}>AI gợi ý sân ngay</Button>
+        </Card>
+      </div>
     </section>
   );
 }

@@ -31,7 +31,7 @@ export function CheckInPanel({ sampleCodes, onCheckIn }: CheckInPanelProps) {
     if (status === "not_found") {
       return {
         tone: "warning" as const,
-        text: "Không tìm thấy booking code",
+        text: "Không tìm thấy mã booking",
       };
     }
     return {
@@ -48,9 +48,9 @@ export function CheckInPanel({ sampleCodes, onCheckIn }: CheckInPanelProps) {
 
   return (
     <Card className="space-y-4">
-      <h3 className="font-heading text-lg font-semibold text-ink">QR / Booking Code Check-in</h3>
+      <h3 className="font-heading text-lg font-semibold text-ink">Check-in bằng QR / mã booking</h3>
       <Input
-        label="Booking code"
+        label="Mã booking"
         placeholder="Nhập mã ví dụ NTP2401"
         value={code}
         onChange={(event) => setCode(event.target.value)}
@@ -71,13 +71,13 @@ export function CheckInPanel({ sampleCodes, onCheckIn }: CheckInPanelProps) {
       {booking ? (
         <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm text-slate-700">
           <p>
-            <strong>Code:</strong> {booking.bookingCode}
+            <strong>Mã:</strong> {booking.bookingCode}
           </p>
           <p>
-            <strong>Mode:</strong> {booking.mode === "solo" ? "Solo join" : "Full court"}
+            <strong>Loại:</strong> {booking.mode === "solo" ? "Ghép lẻ" : "Bao sân"}
           </p>
           <p>
-            <strong>Total:</strong> {formatVnd(booking.totalPriceVnd)}
+            <strong>Tổng tiền:</strong> {formatVnd(booking.totalPriceVnd)}
           </p>
         </div>
       ) : null}

@@ -2,10 +2,10 @@ import { NavLink, Outlet } from "react-router-dom";
 import { cn } from "../../shared/utils";
 
 const entryLinks = [
-  { to: "/player/discovery", label: "Player Demo" },
-  { to: "/owner/dashboard", label: "Owner Demo" },
-  { to: "/admin/dashboard", label: "Admin Demo" },
-  { to: "/assistant/chatbot", label: "Chatbot Demo" },
+  { to: "/player/discovery", label: "Người chơi" },
+  { to: "/owner/dashboard", label: "Chủ sân" },
+  { to: "/admin/dashboard", label: "Quản trị" },
+  { to: "/assistant/chatbot", label: "Trợ lý AI" },
 ];
 
 export function RootLayout() {
@@ -18,7 +18,7 @@ export function RootLayout() {
       <header className="sticky top-0 z-20 border-b border-slate-200/70 bg-white/85 backdrop-blur">
         <div className="mx-auto flex w-full max-w-7xl items-center justify-between px-4 py-3 sm:px-6">
           <NavLink to="/" className="font-heading text-xl font-semibold tracking-tight text-ink">
-            NetUp MVP
+            NetUp MVP Demo
           </NavLink>
           <nav className="hidden items-center gap-2 sm:flex">
             {entryLinks.map((link) => (

@@ -24,7 +24,7 @@ export function OwnerCheckInPage() {
       <CheckInPanel sampleCodes={sampleCodes} onCheckIn={checkInByCode} />
 
       <Card className="space-y-3">
-        <h3 className="font-heading text-lg font-semibold text-ink">Booking queue tại quầy</h3>
+        <h3 className="font-heading text-lg font-semibold text-ink">Hàng chờ booking tại quầy</h3>
         {ownerBookings.slice(0, 6).map((booking) => (
           <div key={booking.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
             <div className="mb-1 flex items-center justify-between">
@@ -34,7 +34,7 @@ export function OwnerCheckInPage() {
               </Badge>
             </div>
             <p className="text-slate-700">
-              Mode: {booking.mode === "solo" ? "Solo" : "Full court"} • Total{" "}
+              Loại: {booking.mode === "solo" ? "Ghép lẻ" : "Bao sân"} • Tổng tiền{" "}
               {formatVnd(booking.totalPriceVnd)}
             </p>
           </div>

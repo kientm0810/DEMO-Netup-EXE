@@ -21,7 +21,7 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
     <Card>
       <form className="grid gap-4 sm:grid-cols-2" onSubmit={onSubmit}>
         <Input
-          label="Platform fee rate (0-1)"
+          label="Tỷ lệ phí nền tảng (0-1)"
           type="number"
           min={0}
           max={1}
@@ -32,7 +32,7 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
           }
         />
         <Input
-          label="Floor fee (VND)"
+          label="Phí sàn (VND)"
           type="number"
           min={0}
           step="500"
@@ -42,7 +42,7 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
           }
         />
         <Input
-          label="Matching radius (km)"
+          label="Bán kính ghép kèo (km)"
           type="number"
           min={1}
           max={20}
@@ -52,7 +52,7 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
           }
         />
         <Input
-          label="No-show strike limit"
+          label="Giới hạn no-show"
           type="number"
           min={1}
           max={10}
@@ -62,7 +62,7 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
           }
         />
         <Input
-          label="Auto release slot (minutes)"
+          label="Tự nhả slot (phút)"
           type="number"
           min={5}
           step={5}
@@ -72,7 +72,7 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
           }
         />
         <Input
-          label="Deposit percent (%)"
+          label="Tỷ lệ đặt cọc (%)"
           type="number"
           min={0}
           max={100}
@@ -91,12 +91,12 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
               setConfig((prev) => ({ ...prev, supportHotlineEnabled: event.target.checked }))
             }
           />
-          Enable support hotline fallback
+          Bật hotline hỗ trợ dự phòng
         </label>
 
         <div className="sm:col-span-2 flex items-center gap-3">
-          <Button type="submit">Save config</Button>
-          {saved ? <Badge tone="success">Saved to local mock state</Badge> : null}
+          <Button type="submit">Lưu cấu hình</Button>
+          {saved ? <Badge tone="success">Đã lưu vào mock state</Badge> : null}
         </div>
       </form>
     </Card>
