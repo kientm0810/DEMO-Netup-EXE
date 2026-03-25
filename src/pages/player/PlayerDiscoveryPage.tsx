@@ -53,6 +53,7 @@ export function PlayerDiscoveryPage() {
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [locationError, setLocationError] = useState<string>("");
+  const promotedSessionSet = useMemo(() => new Set(state.promotedSessionIds), [state.promotedSessionIds]);
 
   const requestUserLocation = () => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
@@ -92,13 +93,17 @@ export function PlayerDiscoveryPage() {
           ? isSessionSkillCompatible(session, currentPlayerAssessment.calculatedLevel)
           : false;
         const occupiedSlots = session.maxSlots - session.openSlots;
-        return { session, court, isRecommended, occupiedSlots };
+        const isPromotedPost = promotedSessionSet.has(session.id);
+        return { session, court, isRecommended, occupiedSlots, isPromotedPost };
       })
       .filter((item): item is NonNullable<typeof item> => Boolean(item));
-  }, [currentPlayerAssessment, state.courts, state.sessions]);
+  }, [currentPlayerAssessment, promotedSessionSet, state.courts, state.sessions]);
 
   const filtered = useMemo(() => {
-    return sessionCards.filter(({ session, court, isRecommended }) => {
+    return sessionCards.filter(({ session, court, isRecommended, isPromotedPost }) => {
+      if (!isPromotedPost) {
+        return false;
+      }
       const query = filters.search.trim().toLowerCase();
       const queryPass =
         query.length === 0 ||
@@ -165,8 +170,8 @@ export function PlayerDiscoveryPage() {
 
       {filtered.length === 0 ? (
         <EmptyState
-          title="Không có session phù hợp"
-          description="Thử đổi bộ lọc hoặc tắt chế độ chỉ gợi ý theo level để xem thêm lựa chọn."
+          title="Chưa có bài post phù hợp"
+          description="Hiện chưa có slot nào được chủ sân promote thành bài post theo bộ lọc bạn chọn."
         >
           <Link to="/player/assessment">
             <Button variant="outline">Điền tự đánh giá</Button>
@@ -180,7 +185,7 @@ export function PlayerDiscoveryPage() {
 
       {filtered.length > 0 && viewMode === "list" ? (
         <div className="grid gap-4 lg:grid-cols-2">
-          {filtered.map(({ session, court, isRecommended, occupiedSlots }) => {
+          {filtered.map(({ session, court, isRecommended, occupiedSlots, isPromotedPost }) => {
             const isPickupPost = session.allowsSoloJoin && session.openSlots > 0;
             const destination = {
               latitude: court.latitude,
@@ -218,6 +223,9 @@ export function PlayerDiscoveryPage() {
 
                 {isPickupPost ? (
                   <Badge className="w-fit bg-white/20 text-white">Bài post tuyển slot trống</Badge>
+                ) : null}
+                {isPromotedPost ? (
+                  <Badge className="w-fit bg-white/20 text-white">Slot đã được chủ sân promote</Badge>
                 ) : null}
 
                 <div className="grid gap-2 text-sm text-slate-100 sm:grid-cols-2">

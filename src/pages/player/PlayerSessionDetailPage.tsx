@@ -3,6 +3,20 @@ import { useAppStore } from "../../app/providers/AppStoreProvider";
 import { Badge, Button, Card, EmptyState } from "../../shared/components";
 import { formatSessionTime, formatVnd, getSkillLabel, getSportLabel } from "../../shared/utils";
 
+function formatSlotRange(startsAt: string, durationMinutes: number): string {
+  const start = new Date(startsAt);
+  const end = new Date(start.getTime() + durationMinutes * 60_000);
+  const dateText = start.toLocaleDateString("vi-VN", {
+    weekday: "long",
+    day: "2-digit",
+    month: "2-digit",
+    year: "numeric",
+  });
+  const startText = start.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  const endText = end.toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
+  return `${dateText} • ${startText} - ${endText}`;
+}
+
 export function PlayerSessionDetailPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const { state } = useAppStore();
@@ -23,6 +37,8 @@ export function PlayerSessionDetailPage() {
 
   const court = state.courts.find((item) => item.id === session.courtId);
   const relatedBookings = state.bookings.filter((booking) => booking.sessionId === session.id);
+  const isPromotedPost = state.promotedSessionIds.includes(session.id);
+  const slotRange = formatSlotRange(session.startsAt, session.durationMinutes);
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1.2fr,0.8fr] fade-up">
@@ -35,6 +51,18 @@ export function PlayerSessionDetailPage() {
           <Badge tone={session.openSlots > 0 ? "success" : "warning"}>
             {session.openSlots > 0 ? `Còn ${session.openSlots} slot` : "Đã đầy"}
           </Badge>
+        </div>
+
+        <div className="rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-900">
+          <p className="font-semibold">
+            {isPromotedPost ? "Bài post đang hiển thị cho người chơi" : "Slot này chưa được promote thành bài post"}
+          </p>
+          <p className="mt-1">
+            <strong>Khung giờ của sân:</strong> {slotRange}
+          </p>
+          <p className="mt-1">
+            <strong>Sân:</strong> {court?.name ?? "-"} ({court?.district ?? "-"})
+          </p>
         </div>
 
         <div className="grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 sm:grid-cols-2">

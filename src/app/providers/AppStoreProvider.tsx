@@ -22,6 +22,7 @@ interface AppState {
   players: typeof players;
   courts: typeof courts;
   sessions: typeof sessions;
+  promotedSessionIds: string[];
   bookings: Booking[];
   ownerAnalytics: typeof ownerAnalytics;
   adminConfig: AdminConfig;
@@ -31,13 +32,20 @@ interface AppState {
 type AppAction =
   | { type: "CREATE_BOOKING"; payload: Booking }
   | { type: "CHECK_IN_BOOKING"; payload: { bookingId: string } }
+  | { type: "TOGGLE_SESSION_PROMOTION"; payload: { sessionId: string } }
   | { type: "UPDATE_ADMIN_CONFIG"; payload: AdminConfig }
   | { type: "SAVE_PLAYER_ASSESSMENT"; payload: PlayerAssessment };
+
+const initialPromotedSessionIds = sessions
+  .filter((session) => session.allowsSoloJoin)
+  .slice(0, 3)
+  .map((session) => session.id);
 
 const initialState: AppState = {
   players,
   courts,
   sessions,
+  promotedSessionIds: initialPromotedSessionIds,
   bookings,
   ownerAnalytics,
   adminConfig,
@@ -57,6 +65,13 @@ function reducer(state: AppState, action: AppAction): AppState {
         bookings: state.bookings.map((booking) =>
           booking.id === action.payload.bookingId ? { ...booking, status: "checked_in" } : booking,
         ),
+      };
+    case "TOGGLE_SESSION_PROMOTION":
+      return {
+        ...state,
+        promotedSessionIds: state.promotedSessionIds.includes(action.payload.sessionId)
+          ? state.promotedSessionIds.filter((sessionId) => sessionId !== action.payload.sessionId)
+          : [action.payload.sessionId, ...state.promotedSessionIds],
       };
     case "UPDATE_ADMIN_CONFIG":
       return {
@@ -88,6 +103,7 @@ interface AppStoreContextValue {
   currentPlayerAssessment?: PlayerAssessment;
   createBooking: (draft: BookingDraft) => Booking | null;
   checkInByCode: (bookingCode: string) => CheckInResult;
+  toggleSessionPromotion: (sessionId: string) => void;
   updateAdminConfig: (nextConfig: AdminConfig) => void;
   savePlayerAssessment: (assessment: Omit<PlayerAssessment, "updatedAt">) => void;
 }
@@ -175,6 +191,10 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
     dispatch({ type: "UPDATE_ADMIN_CONFIG", payload: nextConfig });
   }, []);
 
+  const toggleSessionPromotion = useCallback((sessionId: string) => {
+    dispatch({ type: "TOGGLE_SESSION_PROMOTION", payload: { sessionId } });
+  }, []);
+
   const savePlayerAssessment = useCallback((assessment: Omit<PlayerAssessment, "updatedAt">) => {
     dispatch({
       type: "SAVE_PLAYER_ASSESSMENT",
@@ -193,10 +213,11 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
       currentPlayerAssessment: state.playerAssessments[CURRENT_PLAYER_ID],
       createBooking,
       checkInByCode,
+      toggleSessionPromotion,
       updateAdminConfig,
       savePlayerAssessment,
     }),
-    [state, createBooking, checkInByCode, updateAdminConfig, savePlayerAssessment],
+    [state, createBooking, checkInByCode, toggleSessionPromotion, updateAdminConfig, savePlayerAssessment],
   );
 
   return <AppStoreContext.Provider value={value}>{children}</AppStoreContext.Provider>;

@@ -48,3 +48,14 @@
 - Nếu có vị trí, hiển thị khoảng cách ở bên trái tên địa điểm trên card post.
 - Thêm nút mở đường đi Google Maps theo nhiều phương tiện (xe máy/ô tô, đi bộ, xe đạp, công cộng).
 - Ở map popup cũng hiển thị khoảng cách ước lượng và link chỉ đường Google Maps.
+
+## 7) Bổ sung theo yêu cầu mới (owner post flow + icon filter)
+- Với Owner:
+  - Mỗi chủ sân quản lý nhiều sân.
+  - Mỗi sân hiển thị danh sách khung giờ và số lượng người thuê theo slot.
+  - Có nút promote từng khung giờ thành bài post cho người chơi.
+- Với Player:
+  - Discovery chỉ hiển thị bài post từ slot đã được owner promote.
+  - Trang chi tiết bài post hiển thị rõ khung giờ cụ thể của sân.
+- Với bộ lọc bộ môn:
+  - Chuyển từ dạng select sang dạng icon button trực quan.

@@ -103,3 +103,12 @@ npm run preview
 - Nếu có vị trí, mỗi post hiển thị khoảng cách ở bên trái tên địa điểm.
 - Có nút mở đường đi Google Maps theo nhiều phương tiện (xe máy/ô tô, đi bộ, xe đạp, công cộng).
 - Khoảng cách trong app là ước lượng demo theo tọa độ GPS.
+
+## 12) Owner Promote Slot -> Player Post
+- Owner quản lý nhiều sân, mỗi sân có danh sách khung giờ và số người thuê theo slot.
+- Owner có thể chọn từng khung giờ để `Promote thành bài post` hoặc `Gỡ promote`.
+- Discovery phía Player chỉ hiển thị các slot đã được promote thành bài post.
+- Trang chi tiết bài post hiển thị rõ:
+  - chi tiết sân
+  - bài post đang cho khung giờ nào của sân
+- Filter bộ môn ở Discovery được đổi sang dạng icon để trực quan và thân thiện hơn.
