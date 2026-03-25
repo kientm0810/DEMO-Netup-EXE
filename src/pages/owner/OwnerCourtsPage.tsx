@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
-import { Badge, Button, Card, EmptyState } from "../../shared/components";
+import { Badge, Button, Card, EmptyState, WeeklySessionCalendar } from "../../shared/components";
 import { formatVnd, getSportLabel } from "../../shared/utils";
 
 function formatSlotRange(startsAt: string, durationMinutes: number): string {
@@ -36,6 +36,23 @@ export function OwnerCourtsPage() {
 
   const promotedSet = useMemo(() => new Set(state.promotedSessionIds), [state.promotedSessionIds]);
 
+  const ownerCalendarItems = useMemo(() => {
+    return state.sessions
+      .map((session) => {
+        const court = state.courts.find((item) => item.id === session.courtId);
+        if (!court || court.ownerId !== currentOwnerId) {
+          return null;
+        }
+        return {
+          session,
+          court,
+          isPromoted: promotedSet.has(session.id),
+        };
+      })
+      .filter((item): item is NonNullable<typeof item> => Boolean(item))
+      .sort((a, b) => new Date(a.session.startsAt).getTime() - new Date(b.session.startsAt).getTime());
+  }, [currentOwnerId, promotedSet, state.courts, state.sessions]);
+
   if (ownerCourts.length === 0) {
     return (
       <EmptyState
@@ -52,6 +69,29 @@ export function OwnerCourtsPage() {
           Mỗi khung giờ là một slot quản lý độc lập. Chủ sân có thể bấm{" "}
           <strong>Promote thành bài post</strong> để đẩy đúng slot đó sang luồng người chơi.
         </p>
+      </Card>
+
+      <Card className="space-y-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <div>
+            <h3 className="font-heading text-lg font-semibold text-ink">Lịch quản lý slot 7 ngày</h3>
+            <p className="text-sm text-slate-600">
+              Bấm trực tiếp vào từng slot trên lịch để publish hoặc gỡ post nhanh, không cần đi qua bảng.
+            </p>
+          </div>
+          <div className="flex flex-wrap gap-2 text-xs">
+            <Badge tone="success">Màu xanh: đang publish</Badge>
+            <Badge tone="neutral">Màu xám: chưa publish</Badge>
+          </div>
+        </div>
+
+        <WeeklySessionCalendar
+          items={ownerCalendarItems}
+          anchorDate={ownerCalendarItems[0]?.session.startsAt}
+          colorMode="promotion"
+          emptyMessage="Chưa có slot nào trong tuần này để publish."
+          onSlotClick={(item) => toggleSessionPromotion(item.session.id)}
+        />
       </Card>
 
       {ownerCourts.map((court) => {

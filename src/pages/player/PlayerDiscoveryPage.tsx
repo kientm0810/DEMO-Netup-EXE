@@ -123,6 +123,8 @@ export function PlayerDiscoveryPage() {
     });
   }, [filters, sessionCards]);
 
+  const filteredSessionIds = useMemo(() => filtered.map((item) => item.session.id), [filtered]);
+
   return (
     <section className="space-y-4 fade-up">
       <DiscoveryFilters value={filters} onChange={setFilters} />
@@ -180,7 +182,11 @@ export function PlayerDiscoveryPage() {
       ) : null}
 
       {filtered.length > 0 && viewMode === "map" ? (
-        <DiscoveryMap items={filtered} userLocation={userLocation} />
+        <DiscoveryMap
+          items={filtered}
+          userLocation={userLocation}
+          filteredSessionIds={filteredSessionIds}
+        />
       ) : null}
 
       {filtered.length > 0 && viewMode === "list" ? (
@@ -281,7 +287,7 @@ export function PlayerDiscoveryPage() {
                 </div>
 
                 <div className="mt-1 flex flex-wrap gap-2">
-                  <Link to={`/player/session/${session.id}`}>
+                  <Link to={`/player/session/${session.id}`} state={{ filteredSessionIds }}>
                     <Button variant="outline">Xem chi tiết</Button>
                   </Link>
                   <Link to={`/player/booking/${session.id}`}>

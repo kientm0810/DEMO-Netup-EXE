@@ -112,3 +112,17 @@ npm run preview
   - chi tiết sân
   - bài post đang cho khung giờ nào của sân
 - Filter bộ môn ở Discovery được đổi sang dạng icon để trực quan và thân thiện hơn.
+
+## 13) Bổ sung UX lịch 7 ngày cho Player (2026-03-25)
+- Khi bấm vào `Xem chi tiết` của một post, trang chi tiết hiển thị thêm lịch 7 ngày dạng calendar trực quan.
+- Lịch hiển thị toàn bộ post trong tập đã lọc từ Discovery (nếu vào từ Discovery); nếu không có context lọc thì dùng tập post đang promote.
+- Khung giờ của post đang xem được tô màu nổi bật để người dùng nhận diện nhanh.
+- Mỗi slot trên lịch hiển thị luôn trạng thái `slot trống/tổng slot`.
+- Hover vào slot sẽ thấy tooltip với thông tin nhanh gồm tên sân và địa chỉ.
+
+## 14) Bổ sung lịch quản lý slot cho Owner (2026-03-25)
+- Ở trang quản lý sân của Owner có thêm lịch 7 ngày để theo dõi toàn bộ slot trực quan theo thời gian.
+- Owner có thể thao tác trực tiếp trên slot trong lịch để:
+  - `Publish post` cho slot chưa promote
+  - `Gỡ post` cho slot đã promote
+- Màu slot thể hiện trạng thái publish để hỗ trợ quản lý nhanh ngay trên lịch.

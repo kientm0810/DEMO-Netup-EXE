@@ -1,6 +1,6 @@
-import { Link, useParams } from "react-router-dom";
+import { Link, useLocation, useParams } from "react-router-dom";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
-import { Badge, Button, Card, EmptyState } from "../../shared/components";
+import { Badge, Button, Card, EmptyState, WeeklySessionCalendar } from "../../shared/components";
 import { formatSessionTime, formatVnd, getSkillLabel, getSportLabel } from "../../shared/utils";
 
 function formatSlotRange(startsAt: string, durationMinutes: number): string {
@@ -19,7 +19,13 @@ function formatSlotRange(startsAt: string, durationMinutes: number): string {
 
 export function PlayerSessionDetailPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
+  const location = useLocation();
   const { state } = useAppStore();
+
+  const navigationState = location.state as { filteredSessionIds?: unknown } | null;
+  const filteredSessionIdsFromState = Array.isArray(navigationState?.filteredSessionIds)
+    ? navigationState.filteredSessionIds.filter((id): id is string => typeof id === "string" && id.length > 0)
+    : [];
 
   const session = state.sessions.find((item) => item.id === sessionId);
   if (!session) {
@@ -39,6 +45,30 @@ export function PlayerSessionDetailPage() {
   const relatedBookings = state.bookings.filter((booking) => booking.sessionId === session.id);
   const isPromotedPost = state.promotedSessionIds.includes(session.id);
   const slotRange = formatSlotRange(session.startsAt, session.durationMinutes);
+  const isUsingFilteredContext = filteredSessionIdsFromState.length > 0;
+
+  const calendarSessionIds = Array.from(
+    new Set([
+      ...(isUsingFilteredContext ? filteredSessionIdsFromState : state.promotedSessionIds),
+      session.id,
+    ]),
+  );
+
+  const calendarItems = calendarSessionIds
+    .map((id) => state.sessions.find((item) => item.id === id))
+    .filter((item): item is NonNullable<typeof item> => Boolean(item))
+    .map((calendarSession) => {
+      const calendarCourt = state.courts.find((item) => item.id === calendarSession.courtId);
+      if (!calendarCourt) {
+        return null;
+      }
+      return {
+        session: calendarSession,
+        court: calendarCourt,
+        isPromoted: state.promotedSessionIds.includes(calendarSession.id),
+      };
+    })
+    .filter((item): item is NonNullable<typeof item> => Boolean(item));
 
   return (
     <section className="grid gap-4 lg:grid-cols-[1.2fr,0.8fr] fade-up">
@@ -63,6 +93,21 @@ export function PlayerSessionDetailPage() {
           <p className="mt-1">
             <strong>Sân:</strong> {court?.name ?? "-"} ({court?.district ?? "-"})
           </p>
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="font-heading text-lg font-semibold text-ink">
+            Lịch 7 ngày {isUsingFilteredContext ? "của các post bạn đã lọc" : "của các post đang mở"}
+          </h3>
+          <p className="text-sm text-slate-600">
+            Khung bạn đang xem được tô màu đỏ để nổi bật. Mỗi slot hiển thị luôn trạng thái còn chỗ.
+          </p>
+          <WeeklySessionCalendar
+            items={calendarItems}
+            selectedSessionId={session.id}
+            anchorDate={session.startsAt}
+            emptyMessage="Chưa có post nào trong tuần này theo bộ lọc hiện tại."
+          />
         </div>
 
         <div className="grid gap-3 rounded-2xl bg-slate-50 p-4 text-sm text-slate-700 sm:grid-cols-2">

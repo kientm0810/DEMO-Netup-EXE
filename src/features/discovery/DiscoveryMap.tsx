@@ -20,6 +20,7 @@ interface DiscoveryMapItem {
 interface DiscoveryMapProps {
   items: DiscoveryMapItem[];
   userLocation?: Coordinates | null;
+  filteredSessionIds?: string[];
 }
 
 function createSlotMarkerIcon(occupied: number, max: number, highlighted: boolean): DivIcon {
@@ -72,7 +73,7 @@ const routeModes = [
   { label: "Công cộng", mode: "transit" as const },
 ];
 
-export function DiscoveryMap({ items, userLocation = null }: DiscoveryMapProps) {
+export function DiscoveryMap({ items, userLocation = null, filteredSessionIds }: DiscoveryMapProps) {
   const groupedByCourt = items.reduce<
     Array<{
       court: Court;
@@ -187,6 +188,7 @@ export function DiscoveryMap({ items, userLocation = null }: DiscoveryMapProps) 
                         <div key={sessionItem.session.id} className="rounded-lg bg-slate-50 p-2">
                           <Link
                             to={`/player/session/${sessionItem.session.id}`}
+                            state={{ filteredSessionIds }}
                             className="font-medium text-red-700 underline"
                           >
                             {sessionItem.session.title}

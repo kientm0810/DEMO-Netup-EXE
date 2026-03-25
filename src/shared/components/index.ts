@@ -10,3 +10,5 @@ export { RoleNav } from "./RoleNav";
 export type { RoleNavLink } from "./RoleNav";
 export { Select } from "./Select";
 export { StatCard } from "./StatCard";
+export { WeeklySessionCalendar } from "./WeeklySessionCalendar";
+export type { WeeklySessionCalendarItem } from "./WeeklySessionCalendar";
