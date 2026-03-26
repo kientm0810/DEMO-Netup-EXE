@@ -492,6 +492,50 @@ set
   calculated_level = excluded.calculated_level,
   updated_at = excluded.updated_at;
 
+insert into public.player_sport_assessments (
+  id,
+  player_id,
+  sport,
+  answers,
+  total_score,
+  calculated_level,
+  updated_at
+)
+values
+  (
+    'a9111111-1111-4111-8111-111111111111',
+    '11111111-1111-1111-1111-111111111111',
+    'Badminton',
+    '{"experience":"B","stamina":"B","frequency":"B","tactical":"B"}'::jsonb,
+    8,
+    'Intermediate',
+    '2026-03-26T08:00:00+07'
+  ),
+  (
+    'b9222222-2222-4222-8222-222222222222',
+    '33333333-3333-3333-3333-333333333333',
+    'Badminton',
+    '{"experience":"C","stamina":"B","frequency":"C","tactical":"B"}'::jsonb,
+    10,
+    'Advanced',
+    '2026-03-26T08:20:00+07'
+  ),
+  (
+    'c9333333-3333-4333-8333-333333333333',
+    '44444444-4444-4444-4444-444444444444',
+    'Football',
+    '{"experience":"B","stamina":"B","frequency":"B","tactical":"C"}'::jsonb,
+    9,
+    'Intermediate',
+    '2026-03-26T08:30:00+07'
+  )
+on conflict (player_id, sport) do update
+set
+  answers = excluded.answers,
+  total_score = excluded.total_score,
+  calculated_level = excluded.calculated_level,
+  updated_at = excluded.updated_at;
+
 insert into public.admin_configs (
   id,
   platform_fee_rate,

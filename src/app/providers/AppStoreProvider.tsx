@@ -9,6 +9,7 @@ import {
 } from "react";
 import type {
   AdminConfig,
+  AssessmentAnswerCode,
   Booking,
   BookingDraft,
   Court,
@@ -17,6 +18,8 @@ import type {
   PlayerAssessment,
   PoolPostConfig,
   Session,
+  SkillLevel,
+  SportType,
 } from "../../entities";
 import {
   adminConfig as mockAdminConfig,
@@ -39,7 +42,7 @@ interface AppState {
   bookings: Booking[];
   ownerAnalytics: OwnerAnalytics;
   adminConfig: AdminConfig;
-  playerAssessments: Record<string, PlayerAssessment>;
+  playerAssessments: Record<string, Partial<Record<SportType, PlayerAssessment>>>;
 }
 
 interface CheckInResult {
@@ -52,6 +55,8 @@ interface AppStoreContextValue {
   currentPlayerId: string;
   currentOwnerId: string;
   currentPlayerAssessment?: PlayerAssessment;
+  getPlayerAssessmentBySport: (playerId: string, sport: SportType) => PlayerAssessment | undefined;
+  hasCurrentPlayerAssessmentForSport: (sport: SportType) => boolean;
   isLoading: boolean;
   syncError: string;
   reloadData: () => Promise<void>;
@@ -61,7 +66,13 @@ interface AppStoreContextValue {
   createPoolPost: (draft: { sessionId: string; totalSlots: number; hostSlots: number }) => Promise<boolean>;
   updateCourtRentalLimit: (courtId: string, maxRentalDurationMinutes: number) => Promise<void>;
   updateAdminConfig: (nextConfig: AdminConfig) => Promise<void>;
-  savePlayerAssessment: (assessment: Omit<PlayerAssessment, "updatedAt">) => Promise<void>;
+  savePlayerAssessment: (assessment: {
+    playerId: string;
+    sport: SportType;
+    answers: Record<string, AssessmentAnswerCode>;
+    totalScore: number;
+    calculatedLevel: SkillLevel;
+  }) => Promise<void>;
   clearCurrentTestData: () => Promise<boolean>;
   clearAllTransactionalData: () => Promise<boolean>;
 }
@@ -176,16 +187,34 @@ function mapBookingRow(row: any): Booking {
 function mapAssessmentRow(row: any): PlayerAssessment {
   return {
     playerId: row.player_id,
-    preferredSport: row.preferred_sport,
-    preferredDistrict: row.preferred_district,
-    budgetPerSessionVnd: row.budget_per_session_vnd,
-    sessionsPerWeek: row.sessions_per_week,
-    experienceYears: row.experience_years,
-    staminaScore: row.stamina_score,
-    techniqueScore: row.technique_score,
-    tacticalScore: row.tactical_score,
+    sport: row.sport,
+    answers: (row.answers as Record<string, AssessmentAnswerCode>) ?? {},
+    totalScore: row.total_score ?? 0,
     calculatedLevel: row.calculated_level,
     updatedAt: row.updated_at,
+  };
+}
+
+function mapLegacyAssessmentRow(row: any): PlayerAssessment {
+  const legacyScore =
+    (Number(row.sessions_per_week ?? 1) + Number(row.experience_years ?? 0)) * 2 +
+    Number(row.stamina_score ?? 1) +
+    Number(row.technique_score ?? 1) +
+    Number(row.tactical_score ?? 1);
+
+  return {
+    playerId: row.player_id,
+    sport: row.preferred_sport,
+    answers: {
+      experience: Number(row.experience_years ?? 0) > 3 ? "C" : Number(row.experience_years ?? 0) >= 1 ? "B" : "A",
+      stamina: Number(row.stamina_score ?? 1) >= 4 ? "C" : Number(row.stamina_score ?? 1) >= 3 ? "B" : "A",
+      frequency:
+        Number(row.sessions_per_week ?? 1) >= 4 ? "C" : Number(row.sessions_per_week ?? 1) >= 2 ? "B" : "A",
+      tactical: Number(row.tactical_score ?? 1) >= 4 ? "C" : Number(row.tactical_score ?? 1) >= 3 ? "B" : "A",
+    },
+    totalScore: legacyScore,
+    calculatedLevel: row.calculated_level ?? "Beginner",
+    updatedAt: row.updated_at ?? new Date().toISOString(),
   };
 }
 
@@ -251,7 +280,7 @@ async function loadStateFromSupabase(): Promise<AppState> {
     return buildMockState();
   }
 
-  const [profiles, complexes, courts, sessions, poolPosts, bookings, adminConfig, assessments] = await Promise.all([
+  const [profiles, complexes, courts, sessions, poolPosts, bookings, adminConfig] = await Promise.all([
     supabase.from("profiles").select("id, role, full_name, city, district, age, favorite_sports, skill_level, joined_at"),
     supabase.from("court_complexes").select("id, name, district, address, latitude, longitude"),
     supabase
@@ -261,7 +290,6 @@ async function loadStateFromSupabase(): Promise<AppState> {
     supabase.from("pool_posts").select("session_id, total_slots, host_slots, created_by_player_id, created_at, status"),
     supabase.from("bookings").select("id, booking_code, session_id, court_id, player_id, mode, seats_booked, status, created_at, base_price_vnd, floor_fee_vnd, platform_fee_vnd, total_price_vnd, qr_payload"),
     supabase.from("admin_configs").select("platform_fee_rate, floor_fee_vnd, matching_radius_km, no_show_strike_limit, auto_release_minutes, support_hotline_enabled, deposit_percent").eq("id", 1).maybeSingle(),
-    supabase.from("player_assessments").select("player_id, preferred_sport, preferred_district, budget_per_session_vnd, sessions_per_week, experience_years, stamina_score, technique_score, tactical_score, calculated_level, updated_at"),
   ]);
 
   if (profiles.error) throw new Error(`profiles: ${profiles.error.message}`);
@@ -271,7 +299,30 @@ async function loadStateFromSupabase(): Promise<AppState> {
   if (poolPosts.error) throw new Error(`pool_posts: ${poolPosts.error.message}`);
   if (bookings.error) throw new Error(`bookings: ${bookings.error.message}`);
   if (adminConfig.error) throw new Error(`admin_configs: ${adminConfig.error.message}`);
-  if (assessments.error) throw new Error(`player_assessments: ${assessments.error.message}`);
+
+  let assessmentRows: any[] = [];
+  const assessmentV2 = await supabase
+    .from("player_sport_assessments")
+    .select("player_id, sport, answers, total_score, calculated_level, updated_at");
+
+  if (!assessmentV2.error) {
+    assessmentRows = assessmentV2.data ?? [];
+  } else if (assessmentV2.error.code === "42P01") {
+    const assessmentLegacy = await supabase
+      .from("player_assessments")
+      .select(
+        "player_id, preferred_sport, sessions_per_week, experience_years, stamina_score, technique_score, tactical_score, calculated_level, updated_at",
+      );
+    if (assessmentLegacy.error) {
+      throw new Error(`player_assessments: ${assessmentLegacy.error.message}`);
+    }
+    assessmentRows = (assessmentLegacy.data ?? []).map((row) => ({
+      ...mapLegacyAssessmentRow(row),
+      __mappedLegacy: true,
+    }));
+  } else {
+    throw new Error(`player_sport_assessments: ${assessmentV2.error.message}`);
+  }
 
   const profileRows = profiles.data ?? [];
   const complexRows = complexes.data ?? [];
@@ -279,7 +330,6 @@ async function loadStateFromSupabase(): Promise<AppState> {
   const sessionRows = sessions.data ?? [];
   const poolRows = poolPosts.data ?? [];
   const bookingRows = bookings.data ?? [];
-  const assessmentRows = assessments.data ?? [];
   const adminRow = adminConfig.data;
 
   const complexById = new Map(complexRows.map((row: any) => [row.id, row]));
@@ -336,12 +386,14 @@ async function loadStateFromSupabase(): Promise<AppState> {
     ]),
   );
 
-  const mappedAssessments: Record<string, PlayerAssessment> = Object.fromEntries(
-    assessmentRows.map((row: any) => {
-      const item = mapAssessmentRow(row);
-      return [item.playerId, item];
-    }),
-  );
+  const mappedAssessments: Record<string, Partial<Record<SportType, PlayerAssessment>>> = {};
+  for (const row of assessmentRows) {
+    const item = row.__mappedLegacy ? (row as PlayerAssessment) : mapAssessmentRow(row);
+    mappedAssessments[item.playerId] = {
+      ...(mappedAssessments[item.playerId] ?? {}),
+      [item.sport]: item,
+    };
+  }
 
   const mappedAdminConfig: AdminConfig = adminRow
     ? {
@@ -553,6 +605,17 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
       if (!supabase) return false;
       const session = state.sessions.find((item) => item.id === draft.sessionId);
       if (!session) return false;
+      const court = state.courts.find((item) => item.id === session.courtId);
+      if (!court) return false;
+
+      const currentAssessment = state.playerAssessments[CURRENT_PLAYER_ID]?.[court.sport];
+      if (!currentAssessment) {
+        setSyncError(
+          `Ban can hoan thanh form tu danh gia mon ${court.sport} truoc khi tao post ghep keo.`,
+        );
+        return false;
+      }
+
       const totalSlots = Math.max(2, Math.min(draft.totalSlots, session.maxSlots));
       const hostSlots = Math.max(1, Math.min(draft.hostSlots, totalSlots));
 
@@ -572,7 +635,7 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
       await reloadDataInternal(true);
       return true;
     },
-    [state.sessions, reloadDataInternal],
+    [state.sessions, state.courts, state.playerAssessments, reloadDataInternal],
   );
 
   const updateCourtRentalLimit = useCallback(
@@ -607,26 +670,58 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
   );
 
   const savePlayerAssessment = useCallback(
-    async (assessment: Omit<PlayerAssessment, "updatedAt">) => {
+    async (assessment: {
+      playerId: string;
+      sport: SportType;
+      answers: Record<string, AssessmentAnswerCode>;
+      totalScore: number;
+      calculatedLevel: SkillLevel;
+    }) => {
       if (!supabase) return;
+
       const payload = {
         player_id: assessment.playerId,
-        preferred_sport: assessment.preferredSport,
-        preferred_district: assessment.preferredDistrict,
-        budget_per_session_vnd: assessment.budgetPerSessionVnd,
-        sessions_per_week: assessment.sessionsPerWeek,
-        experience_years: assessment.experienceYears,
-        stamina_score: assessment.staminaScore,
-        technique_score: assessment.techniqueScore,
-        tactical_score: assessment.tacticalScore,
+        sport: assessment.sport,
+        answers: assessment.answers,
+        total_score: assessment.totalScore,
         calculated_level: assessment.calculatedLevel,
         updated_at: new Date().toISOString(),
       };
-      const { error } = await supabase.from("player_assessments").upsert(payload, { onConflict: "player_id" });
-      if (error) setSyncError(`Luu assessment that bai: ${error.message}`);
+      const v2Result = await supabase
+        .from("player_sport_assessments")
+        .upsert(payload, { onConflict: "player_id,sport" });
+
+      if (v2Result.error && v2Result.error.code !== "42P01") {
+        setSyncError(`Luu assessment that bai: ${v2Result.error.message}`);
+        return;
+      }
+
+      if (v2Result.error?.code === "42P01") {
+        const fallbackPayload = {
+          player_id: assessment.playerId,
+          preferred_sport: assessment.sport,
+          preferred_district: state.courts[0]?.district ?? "Thach That",
+          budget_per_session_vnd: 150000,
+          sessions_per_week: 2,
+          experience_years: 1,
+          stamina_score: 3,
+          technique_score: 3,
+          tactical_score: 3,
+          calculated_level: assessment.calculatedLevel,
+          updated_at: new Date().toISOString(),
+        };
+        const fallbackResult = await supabase
+          .from("player_assessments")
+          .upsert(fallbackPayload, { onConflict: "player_id" });
+        if (fallbackResult.error) {
+          setSyncError(`Luu assessment that bai: ${fallbackResult.error.message}`);
+          return;
+        }
+      }
+
       await reloadDataInternal(true);
     },
-    [reloadDataInternal],
+    [state.courts, reloadDataInternal],
   );
 
   const clearCurrentTestData = useCallback(async () => {
@@ -650,12 +745,19 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
     }
 
     const assessmentsDelete = await supabase
-      .from("player_assessments")
+      .from("player_sport_assessments")
       .delete()
       .eq("player_id", CURRENT_PLAYER_ID);
-    if (assessmentsDelete.error) {
+    if (assessmentsDelete.error && assessmentsDelete.error.code !== "42P01") {
       setSyncError(`Don du lieu test that bai: ${assessmentsDelete.error.message}`);
       return false;
+    }
+    if (assessmentsDelete.error?.code === "42P01") {
+      const fallbackDelete = await supabase.from("player_assessments").delete().eq("player_id", CURRENT_PLAYER_ID);
+      if (fallbackDelete.error) {
+        setSyncError(`Don du lieu test that bai: ${fallbackDelete.error.message}`);
+        return false;
+      }
     }
 
     await reconcileOpenSlots();
@@ -684,10 +786,20 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
       return false;
     }
 
-    const assessmentsDelete = await supabase.from("player_assessments").delete().not("player_id", "is", null);
-    if (assessmentsDelete.error) {
+    const assessmentsDelete = await supabase
+      .from("player_sport_assessments")
+      .delete()
+      .not("player_id", "is", null);
+    if (assessmentsDelete.error && assessmentsDelete.error.code !== "42P01") {
       setSyncError(`Xoa assessment that bai: ${assessmentsDelete.error.message}`);
       return false;
+    }
+    if (assessmentsDelete.error?.code === "42P01") {
+      const fallbackDelete = await supabase.from("player_assessments").delete().not("player_id", "is", null);
+      if (fallbackDelete.error) {
+        setSyncError(`Xoa assessment that bai: ${fallbackDelete.error.message}`);
+        return false;
+      }
     }
 
     await reconcileOpenSlots();
@@ -695,12 +807,36 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
     return true;
   }, [reconcileOpenSlots, reloadDataInternal]);
 
+  const getPlayerAssessmentBySport = useCallback(
+    (playerId: string, sport: SportType) => state.playerAssessments[playerId]?.[sport],
+    [state.playerAssessments],
+  );
+
+  const hasCurrentPlayerAssessmentForSport = useCallback(
+    (sport: SportType) => Boolean(state.playerAssessments[CURRENT_PLAYER_ID]?.[sport]),
+    [state.playerAssessments],
+  );
+
+  const currentPlayerAssessment = useMemo(() => {
+    const bySport = state.playerAssessments[CURRENT_PLAYER_ID];
+    if (!bySport) {
+      return undefined;
+    }
+    const assessments = Object.values(bySport).filter((item): item is PlayerAssessment => Boolean(item));
+    if (assessments.length === 0) {
+      return undefined;
+    }
+    return assessments.sort((a, b) => new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime())[0];
+  }, [state.playerAssessments]);
+
   const value = useMemo<AppStoreContextValue>(
     () => ({
       state,
       currentPlayerId: CURRENT_PLAYER_ID,
       currentOwnerId: CURRENT_OWNER_ID,
-      currentPlayerAssessment: state.playerAssessments[CURRENT_PLAYER_ID],
+      currentPlayerAssessment,
+      getPlayerAssessmentBySport,
+      hasCurrentPlayerAssessmentForSport,
       isLoading,
       syncError,
       reloadData,
@@ -716,6 +852,9 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
     }),
     [
       state,
+      currentPlayerAssessment,
+      getPlayerAssessmentBySport,
+      hasCurrentPlayerAssessmentForSport,
       isLoading,
       syncError,
       reloadData,

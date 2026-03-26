@@ -3,6 +3,14 @@
 -- NOTE: This setup uses permissive demo policies for anon/authenticated users.
 -- Tighten RLS policies before going to production.
 
+do $$ declare
+    r record;
+begin
+    for r in (select tablename from pg_tables where schemaname = 'public') loop
+        execute 'drop table if exists "public"."' || r.tablename || '" cascade';
+    end loop;
+end $$;
+
 create extension if not exists pgcrypto;
 create extension if not exists btree_gist;
 
@@ -196,6 +204,17 @@ create table if not exists public.player_assessments (
   updated_at timestamptz not null default now()
 );
 
+create table if not exists public.player_sport_assessments (
+  id uuid primary key default gen_random_uuid(),
+  player_id uuid not null references public.profiles(id) on delete cascade,
+  sport public.sport_type not null,
+  answers jsonb not null default '{}'::jsonb,
+  total_score integer not null check (total_score >= 0),
+  calculated_level public.skill_level not null,
+  updated_at timestamptz not null default now(),
+  unique (player_id, sport)
+);
+
 create table if not exists public.admin_configs (
   id smallint primary key default 1 check (id = 1),
   platform_fee_rate numeric(6, 4) not null check (platform_fee_rate between 0 and 1),
@@ -229,6 +248,7 @@ create index if not exists idx_sessions_post_type_starts_at on public.sessions(p
 create index if not exists idx_pool_posts_created_at on public.pool_posts(created_at desc);
 create index if not exists idx_bookings_player_id_created_at on public.bookings(player_id, created_at desc);
 create index if not exists idx_bookings_session_id on public.bookings(session_id);
+create index if not exists idx_player_sport_assessments_player_sport on public.player_sport_assessments(player_id, sport);
 
 drop trigger if exists trg_profiles_updated_at on public.profiles;
 create trigger trg_profiles_updated_at
@@ -272,6 +292,12 @@ before update on public.player_assessments
 for each row
 execute function public.set_updated_at();
 
+drop trigger if exists trg_player_sport_assessments_updated_at on public.player_sport_assessments;
+create trigger trg_player_sport_assessments_updated_at
+before update on public.player_sport_assessments
+for each row
+execute function public.set_updated_at();
+
 alter table public.profiles enable row level security;
 alter table public.court_complexes enable row level security;
 alter table public.courts enable row level security;
@@ -279,6 +305,7 @@ alter table public.sessions enable row level security;
 alter table public.pool_posts enable row level security;
 alter table public.bookings enable row level security;
 alter table public.player_assessments enable row level security;
+alter table public.player_sport_assessments enable row level security;
 alter table public.admin_configs enable row level security;
 
 drop policy if exists profiles_demo_full_access on public.profiles;
@@ -332,6 +359,14 @@ with check (true);
 drop policy if exists player_assessments_demo_full_access on public.player_assessments;
 create policy player_assessments_demo_full_access
 on public.player_assessments
+for all
+to anon, authenticated
+using (true)
+with check (true);
+
+drop policy if exists player_sport_assessments_demo_full_access on public.player_sport_assessments;
+create policy player_sport_assessments_demo_full_access
+on public.player_sport_assessments
 for all
 to anon, authenticated
 using (true)

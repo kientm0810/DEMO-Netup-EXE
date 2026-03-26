@@ -9,6 +9,7 @@ export { PageTitle } from "./PageTitle";
 export { RoleNav } from "./RoleNav";
 export type { RoleNavLink } from "./RoleNav";
 export { Select } from "./Select";
+export { SportIconFilter } from "./SportIconFilter";
 export { StatCard } from "./StatCard";
 export { WeeklySessionCalendar } from "./WeeklySessionCalendar";
 export type { WeeklySessionCalendarItem } from "./WeeklySessionCalendar";

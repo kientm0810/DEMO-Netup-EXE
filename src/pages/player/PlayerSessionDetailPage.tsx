@@ -2,7 +2,14 @@ import { useMemo, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
 import { Badge, Button, Card, EmptyState, Input, Select, WeeklySessionCalendar } from "../../shared/components";
-import { formatSessionTime, formatVnd, getSkillLabel, getSportLabel } from "../../shared/utils";
+import {
+  findAnswerLabel,
+  formatSessionTime,
+  formatVnd,
+  getSkillLabel,
+  getSportLabel,
+  sportAssessmentQuestionBank,
+} from "../../shared/utils";
 
 function formatSlotRange(startsAt: string, durationMinutes: number): string {
   const start = new Date(startsAt);
@@ -42,7 +49,7 @@ export function PlayerSessionDetailPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
   const location = useLocation();
   const navigate = useNavigate();
-  const { state, createRentalSlot } = useAppStore();
+  const { state, createRentalSlot, getPlayerAssessmentBySport } = useAppStore();
   const sourceType =
     (location.state as { sourceType?: unknown } | null)?.sourceType === "rental" ? "rental" : "pool";
   const poolSessionSet = new Set(state.promotedSessionIds);
@@ -72,6 +79,58 @@ export function PlayerSessionDetailPage() {
   );
   const activeSlotOpen = poolSessionSet.has(session.id) ? activePoolSlots.openSlots : session.openSlots;
   const activeSlotTotal = poolSessionSet.has(session.id) ? activePoolSlots.totalSlots : session.maxSlots;
+  const poolParticipantProfiles = useMemo(() => {
+    if (!court || !poolSessionSet.has(session.id)) {
+      return [];
+    }
+
+    const profileMap = new Map(state.players.map((player) => [player.id, player]));
+    const participants = new Map<
+      string,
+      {
+        playerId: string;
+        displayName: string;
+        role: "host" | "member";
+        seatsBooked: number;
+      }
+    >();
+
+    if (activePoolConfig) {
+      const hostProfile = profileMap.get(activePoolConfig.createdByPlayerId);
+      participants.set(activePoolConfig.createdByPlayerId, {
+        playerId: activePoolConfig.createdByPlayerId,
+        displayName: hostProfile?.fullName ?? "Chủ pool",
+        role: "host",
+        seatsBooked: activePoolConfig.hostSlots,
+      });
+    }
+
+    for (const booking of relatedBookings) {
+      if (booking.mode !== "solo" || booking.status === "cancelled") {
+        continue;
+      }
+      const player = profileMap.get(booking.playerId);
+      participants.set(booking.playerId, {
+        playerId: booking.playerId,
+        displayName: player?.fullName ?? booking.playerId,
+        role: participants.get(booking.playerId)?.role ?? "member",
+        seatsBooked: booking.seatsBooked,
+      });
+    }
+
+    return Array.from(participants.values()).map((participant) => ({
+      ...participant,
+      assessment: getPlayerAssessmentBySport(participant.playerId, court.sport),
+    }));
+  }, [
+    court,
+    poolSessionSet,
+    session.id,
+    state.players,
+    activePoolConfig,
+    relatedBookings,
+    getPlayerAssessmentBySport,
+  ]);
 
   const sameCourtSessions = state.sessions
     .filter((item) => item.courtId === session.courtId)
@@ -297,6 +356,47 @@ export function PlayerSessionDetailPage() {
             <strong>Điểm đánh giá sân:</strong> {court?.rating ?? "-"} / 5.0
           </p>
         </div>
+
+        {poolSessionSet.has(session.id) && court ? (
+          <div className="space-y-2 rounded-2xl border border-slate-200 bg-slate-50 p-3">
+            <h4 className="font-semibold text-ink">Tự đánh giá người đang apply trong pool</h4>
+            {poolParticipantProfiles.length === 0 ? (
+              <p className="text-sm text-slate-600">Pool chưa có ai apply.</p>
+            ) : (
+              poolParticipantProfiles.map((participant) => (
+                <div key={participant.playerId} className="rounded-xl border border-slate-200 bg-white p-3 text-sm">
+                  <div className="mb-2 flex items-center justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-ink">{participant.displayName}</p>
+                      <p className="text-xs text-slate-600">
+                        {participant.role === "host" ? "Chủ pool" : "Thành viên apply"} •{" "}
+                        {participant.seatsBooked} slot
+                      </p>
+                    </div>
+                    {participant.assessment ? (
+                      <Badge tone="success">{getSkillLabel(participant.assessment.calculatedLevel)}</Badge>
+                    ) : (
+                      <Badge tone="warning">Chưa có tự đánh giá môn này</Badge>
+                    )}
+                  </div>
+                  {participant.assessment ? (
+                    <div className="space-y-1 text-xs text-slate-700">
+                      {sportAssessmentQuestionBank[court.sport].map((question) => {
+                        const answerCode = participant.assessment?.answers[question.id];
+                        return (
+                          <p key={question.id}>
+                            <strong>{question.question}</strong>{" "}
+                            {findAnswerLabel(court.sport, question.id, answerCode)}
+                          </p>
+                        );
+                      })}
+                    </div>
+                  ) : null}
+                </div>
+              ))
+            )}
+          </div>
+        ) : null}
       </Card>
     </section>
   );

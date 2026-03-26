@@ -61,7 +61,7 @@ export function AssistantChatbotPage() {
   const [suggestionInput, setSuggestionInput] = useState({
     sport: "All",
     district: "",
-    budget: currentPlayerAssessment?.budgetPerSessionVnd ?? 130000,
+    budget: 130000,
     soloOnly: true,
   });
 

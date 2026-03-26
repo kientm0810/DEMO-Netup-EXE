@@ -14,8 +14,15 @@ export type { PriceBreakdown } from "./pricing";
 export { findSessionById, findCourtById, findBookingByCode } from "./selectors";
 export { recommendSessions, isSessionSkillCompatible } from "./recommendation";
 export type { RecommendationInput, SessionRecommendation } from "./recommendation";
-export { calculateAssessmentScore, classifySkillLevel } from "./assessment";
-export type { AssessmentScoreInput } from "./assessment";
+export {
+  sportAssessmentQuestionBank,
+  buildDefaultAnswersForSport,
+  calculateAssessmentScoreFromAnswers,
+  classifySkillLevelByQuestionnaire,
+  findAnswerLabel,
+  hasAssessmentForSport,
+} from "./assessment";
+export type { SportAssessmentQuestion, SportAssessmentOption } from "./assessment";
 export { getPostBackgroundBySport } from "./postBackground";
 export {
   calculateDistanceKm,

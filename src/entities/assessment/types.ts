@@ -1,15 +1,14 @@
 import type { SkillLevel } from "../player/types";
+import type { Court } from "../court/types";
+
+export type AssessmentAnswerCode = "A" | "B" | "C";
+export type SportType = Court["sport"];
 
 export interface PlayerAssessment {
   playerId: string;
-  preferredSport: "Badminton" | "Football" | "Tennis";
-  preferredDistrict: string;
-  budgetPerSessionVnd: number;
-  sessionsPerWeek: number;
-  experienceYears: number;
-  staminaScore: number;
-  techniqueScore: number;
-  tacticalScore: number;
+  sport: SportType;
+  answers: Record<string, AssessmentAnswerCode>;
+  totalScore: number;
   calculatedLevel: SkillLevel;
   updatedAt: string;
 }

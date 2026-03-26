@@ -1,126 +1,98 @@
-# NetUp MVP - Codex Handoff Context
+# NetUp MVP - Codex Handoff (Updated)
 
-## 1) Mục tiêu dự án
-- Đây là demo frontend MVP cho NetUp (React + Vite + TypeScript).
-- Mục tiêu demo:
-  - thể hiện rõ luồng người chơi/chủ sân/quản trị,
-  - nhấn mạnh khác biệt AI,
-  - mô phỏng logic booking/pool/rental bằng mock data local.
+## 1) Muc tieu du an
+- Demo san choi the thao NetUp cho 3 vai tro:
+  - Nguoi choi
+  - Chu san
+  - Admin
+- Muc tieu demo:
+  - Dat san theo 2 luong: `Keo cho ghep` va `Thue nguyen san`
+  - Lich truc quan theo san
+  - Tu danh gia nang luc theo tung mon de ghep keo
+  - Co backend demo bang Supabase de tuong tac thuc te
 
-## 2) Cách chạy
-- Yêu cầu: Node.js 18+, npm 9+.
-- Lệnh:
-  - `npm install`
-  - `npm run dev`
-  - `npm run build`
+## 2) Stack hien tai
+- Frontend: React + Vite + TypeScript + Tailwind
+- Router: React Router
+- Map: React Leaflet
+- Database: Supabase (Postgres)
+- State runtime: `AppStoreProvider` (Supabase-first, fallback mock neu thieu env)
 
-## 3) Stack & kiến trúc
-- UI: React + Tailwind.
-- Router: React Router.
-- Store: Context + `useReducer` tại `src/app/providers/AppStoreProvider.tsx`.
-- Dữ liệu: mock local trong `src/mocks`.
+## 3) Cac env can co (frontend)
+- `VITE_SUPABASE_URL`
+- `VITE_SUPABASE_ANON_KEY`
+- Co fallback doc env kieu Vercel integration:
+  - `NEXT_PUBLIC_SUPABASE_URL`
+  - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 
-## 4) Domain hiện tại (điểm quan trọng)
-- `Court` có các field quan trọng:
-  - `complexName`: tên khu sân,
-  - `subCourtName`: tên sân nhỏ (dùng hiển thị chính),
-  - `maxRentalDurationMinutes`: giới hạn phút/lần thuê do owner đặt.
-- `Session` là đơn vị khung giờ.
-- `PoolPostConfig` lưu cấu hình pool do người chơi tạo:
-  - `totalSlots`, `hostSlots`, `sessionId`, ...
+## 4) Nguon du lieu va dong bo
+- File chinh: `src/app/providers/AppStoreProvider.tsx`
+- App hien tai:
+  - Doc/ghi truc tiep `profiles`, `court_complexes`, `courts`, `sessions`, `pool_posts`, `bookings`, `admin_configs`
+  - Doc assessment moi tu `player_sport_assessments`
+  - Neu bang moi chua ton tai, fallback doc/ghi `player_assessments` (legacy)
+- Root layout co banner loading/error DB + nut reload.
 
-## 5) Mock data hiện tại
-- Khu vực dữ liệu: gần Khu Công nghệ cao Hòa Lạc, Hà Nội.
-- File chính:
-  - `src/mocks/courts.ts`
-  - `src/mocks/sessions.ts`
+## 5) Feature moi quan trong (assessment theo mon)
+- Form assessment da doi sang questionnaire A/B/C theo tung mon:
+  - Badminton
+  - Football
+  - Tennis
+- Moi mon co bo cau hoi rieng (kinh nghiem, the luc, tan suat, chien thuat)
+- He thong tinh `totalScore` va suy ra `calculatedLevel` (Beginner/Intermediate/Advanced)
+- Utility nam tai:
+  - `src/shared/utils/assessment.ts`
+- Page UI:
+  - `src/pages/player/PlayerAssessmentPage.tsx`
 
-## 6) Routes chính
-- `/player/discovery`: trang chọn luồng cho player.
-- `/player/pool-posts`: luồng kèo chờ ghép.
-- `/player/rent-courts`: luồng thuê nguyên sân (mở lịch + tạo slot thuê trực tiếp).
-- `/player/session/:sessionId`: trang chi tiết slot (có lịch sân 7 ngày).
-- `/player/booking/:sessionId`: xác nhận đặt.
-- `/player/booking-success/:bookingId`: QR thành công.
-- `/owner/courts`: quản lý sân + giới hạn thời lượng thuê.
+## 6) Rang buoc tao pool
+- Khi tao `Keo cho ghep`, bat buoc nguoi choi da co assessment dung mon cua san.
+- Logic chan tao pool nam trong:
+  - `createPoolPost(...)` o `AppStoreProvider`
+- UI nhac nguoi choi di den trang assessment truoc khi tao post.
 
-## 7) Luồng Player hiện tại
+## 7) Chi tiet post pool hien assessment thanh vien
+- Trang: `src/pages/player/PlayerSessionDetailPage.tsx`
+- Neu session la pool:
+  - Hien host + thanh vien da apply (booking solo)
+  - Hien level va cau tra loi assessment theo dung mon cua san
+- Muc dich: cho nguoi choi quyet dinh join pool dua tren profile thuc te.
 
-### 7.1 Kèo chờ ghép
-- Trang: `src/pages/player/PlayerPoolPostsPage.tsx`.
-- Flow tạo pool:
-  1. Lọc theo môn.
-  2. Chọn sân.
-  3. Chọn khung giờ.
-  4. Nhập tổng slot mong muốn.
-  5. Nhập slot bản thân giữ trước.
-- Gọi store action `createPoolPost(...)`.
+## 8) Route quan trong
+- `/player/discovery`
+- `/player/pool-posts`
+- `/player/rent-courts`
+- `/player/session/:sessionId`
+- `/player/booking/:sessionId`
+- `/player/assessment`
+- `/owner/courts`
+- `/admin/config`
 
-### 7.2 Thuê nguyên sân
-- Trang: `src/pages/player/PlayerRentCourtsPage.tsx`.
-- Khi bấm `Thuê sân (mở lịch)` ở card sân:
-  - hiển thị lịch 7 ngày của đúng sân đó,
-  - có form tạo slot thuê trực tiếp (datetime + duration),
-  - giới hạn duration theo `court.maxRentalDurationMinutes`,
-  - tạo slot thành công sẽ điều hướng sang booking full-court.
-- Gọi store action `createRentalSlot(...)`.
+## 9) DB schema va seed
+- Schema: `supabase/schema.sql`
+  - Co bang moi `player_sport_assessments`
+- Seed mock: `supabase/migration_data_mock.sql`
+  - Da co du lieu assessment theo mon
+  - Da co du lieu san/session/booking quanh khu Hoa Lac
 
-### 7.3 Chi tiết slot
-- Trang: `src/pages/player/PlayerSessionDetailPage.tsx`.
-- Hiển thị lịch 7 ngày cùng sân, tag phân biệt pool/rental.
-- Với source rental: có thêm form tạo slot thuê mới ngay trong trang chi tiết.
+## 10) Admin lam sach du lieu test
+- Trang admin config co 2 nut:
+  - Don du lieu test cua current player
+  - Don toan bo du lieu giao dich runtime (booking/pool/assessment/slot runtime)
+- Logic nam trong `AppStoreProvider`:
+  - `clearCurrentTestData()`
+  - `clearAllTransactionalData()`
 
-## 8) Luồng Owner hiện tại
-- Trang: `src/pages/owner/OwnerCourtsPage.tsx`.
-- Có block “Biểu mẫu đăng ký sân (demo)” hiển thị:
-  - khu sân, sân nhỏ, môn, địa chỉ.
-- Owner có thể chỉnh:
-  - `Giới hạn thời lượng 1 lần thuê (phút)`.
-- Gọi store action `updateCourtRentalLimit(courtId, minutes)`.
+## 11) File nen doc truoc khi sua
+- `src/app/providers/AppStoreProvider.tsx`
+- `src/pages/player/PlayerPoolPostsPage.tsx`
+- `src/pages/player/PlayerSessionDetailPage.tsx`
+- `src/pages/player/PlayerAssessmentPage.tsx`
+- `supabase/schema.sql`
+- `supabase/migration_data_mock.sql`
 
-## 9) Store actions quan trọng (AppStoreProvider)
-- `createBooking(draft)`
-- `checkInByCode(code)`
-- `createPoolPost({ sessionId, totalSlots, hostSlots })`
-- `createRentalSlot({ courtId, startsAt, durationMinutes })`
-  - có check overlap khung giờ trên cùng sân.
-- `updateCourtRentalLimit(courtId, maxRentalDurationMinutes)`
-- `updateAdminConfig(nextConfig)`
-- `savePlayerAssessment(assessment)`
-
-## 10) UI component quan trọng
-- Calendar tuần: `src/shared/components/WeeklySessionCalendar.tsx`
-  - render 7 ngày, tag slot, tooltip sân + địa chỉ.
-- Card post dùng chung: `src/features/discovery/SessionPostCard.tsx`.
-- Mapping ảnh post theo môn:
-  - `src/shared/utils/postBackground.ts`
-  - ảnh trong `src/shared/assets/post-backgrounds/`.
-
-## 11) Quy ước hiển thị hiện tại
-- Ưu tiên hiển thị `subCourtName` thay vì title tự do để người dùng hiểu đây là cùng một sân nhỏ.
-- Có thể hiển thị thêm `complexName` để giữ ngữ cảnh khu sân.
-- Lịch được thu gọn để dễ nhìn hơn so với phiên bản cũ.
-
-## 12) Giới hạn hiện tại (đã biết)
-- Không có backend/database/auth thật.
-- Tạo slot thuê/pool hiện chỉ cập nhật state trong phiên chạy app.
-- Chưa có cơ chế phân quyền owner theo account thật.
-- Check overlap slot là local in-memory, chưa có sync đa user.
-
-## 13) Cách tiếp tục ở session sau (gợi ý cho Codex khác)
-- Bước 1: đọc nhanh các file:
-  - `src/app/providers/AppStoreProvider.tsx`
-  - `src/pages/player/PlayerRentCourtsPage.tsx`
-  - `src/pages/player/PlayerPoolPostsPage.tsx`
-  - `src/pages/owner/OwnerCourtsPage.tsx`
-  - `src/shared/components/WeeklySessionCalendar.tsx`
-- Bước 2: chạy `npm run build` để xác nhận baseline xanh.
-- Bước 3: nếu sửa logic flow booking/pool/rental, cập nhật đồng bộ:
-  - store action,
-  - page UI,
-  - `README.md` (phần flow tương ứng).
-
-## 14) Ghi chú tài liệu
-- README chính: `README.md`.
-- Context chatbot: `CHATBOT_CONTEXT.md`.
-- Nhật ký yêu cầu cũ: `REQUIREMENTS_UPDATE_2026-03-24.md`.
+## 12) Build/check
+- `npm run build` dang pass sau update.
+- Neu deploy Vercel ma fallback mock:
+  - Kiem tra env `VITE_...`/`NEXT_PUBLIC_...`
+  - Redeploy de Vite inject env moi.

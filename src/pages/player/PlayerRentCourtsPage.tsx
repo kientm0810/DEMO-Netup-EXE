@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
-import { Badge, Button, Card, EmptyState, Input, Select, WeeklySessionCalendar } from "../../shared/components";
+import { Badge, Button, Card, EmptyState, Input, Select, SportIconFilter, WeeklySessionCalendar } from "../../shared/components";
 import {
   calculateDistanceKm,
   formatDistanceLabel,
@@ -213,26 +213,22 @@ export function PlayerRentCourtsPage() {
         {locationStatus === "error" ? <p className="text-sm text-red-700">{locationError}</p> : null}
       </Card>
 
-      <Card className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <Card className="grid gap-3 lg:grid-cols-[minmax(280px,1fr),minmax(0,1.4fr)]">
         <Input
           label="Tìm sân"
           placeholder="Tên sân, khu sân, địa chỉ..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
-        <Select
-          label="Lọc theo môn"
-          value={sportFilter}
-          onChange={(event) => setSportFilter(event.target.value as SportFilter)}
-          options={[
-            { value: "All", label: "Tất cả môn" },
-            { value: "Badminton", label: "Cầu lông" },
-            { value: "Football", label: "Bóng đá" },
-            { value: "Tennis", label: "Tennis" },
-          ]}
-        />
-        <div className="flex items-end">
-          <Badge tone="info">Hiển thị {filteredCourts.length} sân</Badge>
+        <div className="space-y-2">
+          <SportIconFilter
+            label="Lọc theo môn"
+            value={sportFilter}
+            onChange={(next) => setSportFilter(next as SportFilter)}
+          />
+          <div className="flex items-center justify-end">
+            <Badge tone="info">Hiển thị {filteredCourts.length} sân</Badge>
+          </div>
         </div>
       </Card>
 

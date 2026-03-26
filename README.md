@@ -171,3 +171,33 @@ npm run preview
   - tạo slot thuê trực tiếp trong cùng màn hình lịch
 - Hệ thống kiểm tra trùng lịch trước khi tạo slot thuê mới.
 - Nếu trùng lịch, hiển thị lỗi để người chơi đổi thời gian hoặc thời lượng.
+
+## 18) Tu danh gia nang luc theo tung mon (moi)
+- Trang `Player Assessment` da doi sang kieu questionnaire theo tung mon rieng:
+  - Cau long
+  - Bong da
+  - Tennis
+- Moi mon co bo cau hoi A/B/C de nguoi choi tu danh gia:
+  - thoi gian da choi mon do
+  - the luc/so phut choi lien tuc
+  - tan suat choi
+  - nang luc chien thuat
+- He thong cham diem tu dong theo dap an va suy ra level:
+  - Beginner
+  - Intermediate
+  - Advanced
+- Du lieu duoc luu theo tung mon trong bang `player_sport_assessments`.
+
+## 19) Rang buoc tao pool + hien thi assessment trong chi tiet post
+- Khi tao post `Keo cho ghep`, nguoi choi bat buoc da hoan thanh tu danh gia cho dung mon cua san.
+- Neu chua co assessment theo mon, he thong chan thao tac tao pool va yeu cau di den trang tu danh gia.
+- Khi vao chi tiet 1 post pool:
+  - Hien thi danh sach nguoi dang apply trong pool (host + thanh vien da booking solo)
+  - Hien thi level va cac cau tra loi tu danh gia theo dung mon cua san
+  - Giup nguoi choi quyet dinh co nen join pool hay khong.
+
+## 20) Script database cho feature assessment moi
+- `supabase/schema.sql` da duoc cap nhat them bang:
+  - `player_sport_assessments`
+- `supabase/migration_data_mock.sql` da co seed mau cho assessment theo mon.
+- Neu project Supabase da tao schema cu, hay chay lai SQL update trong `schema.sql` roi chay seed `migration_data_mock.sql`.

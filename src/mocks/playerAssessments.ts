@@ -1,17 +1,19 @@
-import type { PlayerAssessment } from "../entities";
+import type { PlayerAssessment, SportType } from "../entities";
 
-export const playerAssessments: Record<string, PlayerAssessment> = {
-  "player-001": {
-    playerId: "player-001",
-    preferredSport: "Badminton",
-    preferredDistrict: "Thạch Thất",
-    budgetPerSessionVnd: 130000,
-    sessionsPerWeek: 3,
-    experienceYears: 2,
-    staminaScore: 3,
-    techniqueScore: 3,
-    tacticalScore: 3,
-    calculatedLevel: "Intermediate",
-    updatedAt: "2026-03-23T08:00:00.000Z",
+export const playerAssessments: Record<string, Partial<Record<SportType, PlayerAssessment>>> = {
+  "11111111-1111-1111-1111-111111111111": {
+    Badminton: {
+      playerId: "11111111-1111-1111-1111-111111111111",
+      sport: "Badminton",
+      answers: {
+        experience: "B",
+        stamina: "B",
+        frequency: "B",
+        tactical: "B",
+      },
+      totalScore: 8,
+      calculatedLevel: "Intermediate",
+      updatedAt: "2026-03-23T08:00:00.000Z",
+    },
   },
 };

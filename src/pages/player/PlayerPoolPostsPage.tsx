@@ -2,11 +2,12 @@ import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
 import { SessionPostCard } from "../../features/discovery";
-import { Badge, Button, Card, EmptyState, Input, Select } from "../../shared/components";
+import { Badge, Button, Card, EmptyState, Input, Select, SportIconFilter } from "../../shared/components";
 import {
   calculateDistanceKm,
   formatDistanceLabel,
   formatSessionTime,
+  getSportLabel,
   type Coordinates,
 } from "../../shared/utils";
 
@@ -27,7 +28,7 @@ function getPoolSlotView(params: {
 }
 
 export function PlayerPoolPostsPage() {
-  const { state, createPoolPost } = useAppStore();
+  const { state, createPoolPost, hasCurrentPlayerAssessmentForSport } = useAppStore();
   const [search, setSearch] = useState("");
   const [listSportFilter, setListSportFilter] = useState<SportFilter>("All");
   const [createSportFilter, setCreateSportFilter] = useState<Exclude<SportFilter, "All">>("Badminton");
@@ -131,6 +132,7 @@ export function PlayerPoolPostsPage() {
   }, [createCourtId, poolSessionSet, state.sessions]);
 
   const selectedCreateSession = creatableSessions.find((session) => session.id === createSessionId);
+  const hasAssessmentForCreateSport = hasCurrentPlayerAssessmentForSport(createSportFilter);
 
   useEffect(() => {
     if (creatableCourts.length === 0) {
@@ -171,6 +173,13 @@ export function PlayerPoolPostsPage() {
   }, [desiredTotalSlots, myRegisteredSlots, selectedCreateSession]);
 
   const handleCreatePool = async () => {
+    if (!hasAssessmentForCreateSport) {
+      setCreateMessage(
+        `Bạn cần hoàn thành tự đánh giá môn ${getSportLabel(createSportFilter)} trước khi tạo post ghép kèo.`,
+      );
+      return;
+    }
+
     if (!selectedCreateSession) {
       setCreateMessage("Bạn cần chọn sân và khung giờ trước khi tạo post ghép kèo.");
       return;
@@ -213,18 +222,14 @@ export function PlayerPoolPostsPage() {
       <Card className="space-y-3">
         <h3 className="font-heading text-lg font-semibold text-ink">Tạo post ghép kèo (demo flow chuẩn)</h3>
         <div className="grid gap-3 md:grid-cols-2">
-          <Select
+          <SportIconFilter
             label="Bước 1 - Lọc theo môn"
             value={createSportFilter}
-            onChange={(event) => {
-              setCreateSportFilter(event.target.value as Exclude<SportFilter, "All">);
+            options={["Badminton", "Football", "Tennis"]}
+            onChange={(next) => {
+              setCreateSportFilter(next as Exclude<SportFilter, "All">);
               setCreateMessage("");
             }}
-            options={[
-              { value: "Badminton", label: "Cầu lông" },
-              { value: "Football", label: "Bóng đá" },
-              { value: "Tennis", label: "Tennis" },
-            ]}
           />
 
           <Select
@@ -289,9 +294,17 @@ export function PlayerPoolPostsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={() => void handleCreatePool()} disabled={!selectedCreateSession || creatingPool}>
+          <Button
+            onClick={() => void handleCreatePool()}
+            disabled={!selectedCreateSession || creatingPool || !hasAssessmentForCreateSport}
+          >
             {creatingPool ? "Đang tạo..." : "Tạo post ghép kèo"}
           </Button>
+          {!hasAssessmentForCreateSport ? (
+            <Link to="/player/assessment" state={{ sport: createSportFilter }}>
+              <Button variant="outline">Làm tự đánh giá môn này trước</Button>
+            </Link>
+          ) : null}
           <Link to="/player/rent-courts">
             <Button variant="outline">Chuyển sang thuê nguyên sân</Button>
           </Link>
@@ -299,26 +312,22 @@ export function PlayerPoolPostsPage() {
         {createMessage ? <p className="text-sm text-slate-700">{createMessage}</p> : null}
       </Card>
 
-      <Card className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+      <Card className="grid gap-3 lg:grid-cols-[minmax(280px,1fr),minmax(0,1.4fr)]">
         <Input
           label="Tìm nhanh post pool"
           placeholder="Tên sân, khu sân, địa chỉ..."
           value={search}
           onChange={(event) => setSearch(event.target.value)}
         />
-        <Select
-          label="Lọc danh sách post theo môn"
-          value={listSportFilter}
-          onChange={(event) => setListSportFilter(event.target.value as SportFilter)}
-          options={[
-            { value: "All", label: "Tất cả môn" },
-            { value: "Badminton", label: "Cầu lông" },
-            { value: "Football", label: "Bóng đá" },
-            { value: "Tennis", label: "Tennis" },
-          ]}
-        />
-        <div className="flex items-end">
-          <Badge tone="info">Đang có {filteredPoolPosts.length} post pool</Badge>
+        <div className="space-y-2">
+          <SportIconFilter
+            label="Lọc danh sách post theo môn"
+            value={listSportFilter}
+            onChange={(next) => setListSportFilter(next as SportFilter)}
+          />
+          <div className="flex items-center justify-end">
+            <Badge tone="info">Đang có {filteredPoolPosts.length} post pool</Badge>
+          </div>
         </div>
       </Card>
 
