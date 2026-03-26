@@ -197,7 +197,7 @@ export function PlayerAssessmentPage() {
               <div key={item.session.id} className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm">
                 <p className="font-medium text-ink">{item.session.title}</p>
                 <p className="text-slate-600">
-                  {item.court.name} • {item.court.district}
+                  {item.court.subCourtName} • {item.court.district}
                 </p>
                 <p className="text-slate-700">{formatVnd(item.session.slotPriceVnd)}/slot</p>
               </div>

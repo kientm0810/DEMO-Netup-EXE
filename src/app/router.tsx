@@ -16,6 +16,8 @@ import { PlayerBookingSuccessPage } from "../pages/player/PlayerBookingSuccessPa
 import { PlayerBookingsPage } from "../pages/player/PlayerBookingsPage";
 import { PlayerDiscoveryPage } from "../pages/player/PlayerDiscoveryPage";
 import { PlayerAssessmentPage } from "../pages/player/PlayerAssessmentPage";
+import { PlayerPoolPostsPage } from "../pages/player/PlayerPoolPostsPage";
+import { PlayerRentCourtsPage } from "../pages/player/PlayerRentCourtsPage";
 import { PlayerSessionDetailPage } from "../pages/player/PlayerSessionDetailPage";
 
 export const router = createBrowserRouter([
@@ -29,6 +31,8 @@ export const router = createBrowserRouter([
         element: <PlayerLayout />,
         children: [
           { path: "discovery", element: <PlayerDiscoveryPage /> },
+          { path: "pool-posts", element: <PlayerPoolPostsPage /> },
+          { path: "rent-courts", element: <PlayerRentCourtsPage /> },
           { path: "session/:sessionId", element: <PlayerSessionDetailPage /> },
           { path: "booking/:sessionId", element: <PlayerBookingPage /> },
           { path: "booking-success/:bookingId", element: <PlayerBookingSuccessPage /> },

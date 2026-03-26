@@ -54,5 +54,5 @@ export const chatbotQuickPrompts = [
   "Giải thích sự khác nhau giữa ghép kèo và đặt trọn sân",
   "Check-in bằng QR hoạt động như thế nào?",
   "Quản trị có thể chỉnh các quy tắc nào?",
-  "Gợi ý cho tôi sân cầu lông ở Thu Duc dưới 130k",
+  "Gợi ý cho tôi sân cầu lông gần Hòa Lạc dưới 130k",
 ];

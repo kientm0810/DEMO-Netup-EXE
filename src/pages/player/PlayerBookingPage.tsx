@@ -1,5 +1,5 @@
 import { useMemo, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 import { useAppStore } from "../../app/providers/AppStoreProvider";
 import { BookingModeToggle, PriceBreakdown } from "../../features/booking";
 import { Badge, Button, Card, EmptyState, Input } from "../../shared/components";
@@ -7,13 +7,21 @@ import { calculatePriceBreakdown, formatSessionTime } from "../../shared/utils";
 
 export function PlayerBookingPage() {
   const { sessionId } = useParams<{ sessionId: string }>();
+  const location = useLocation();
   const navigate = useNavigate();
   const { state, currentPlayerId, createBooking } = useAppStore();
+  const hasPreferredMode = (location.state as { preferredMode?: unknown } | null)?.preferredMode !== undefined;
+  const preferredMode =
+    (location.state as { preferredMode?: unknown } | null)?.preferredMode === "full_court"
+      ? "full_court"
+      : "solo";
+  const sourceType =
+    (location.state as { sourceType?: unknown } | null)?.sourceType === "rental" ? "rental" : "pool";
 
   const session = state.sessions.find((item) => item.id === sessionId);
   const court = session ? state.courts.find((item) => item.id === session.courtId) : undefined;
 
-  const [mode, setMode] = useState<"solo" | "full_court">("solo");
+  const [mode, setMode] = useState<"solo" | "full_court">(preferredMode);
   const [seatsBooked, setSeatsBooked] = useState(1);
   const [submitError, setSubmitError] = useState("");
 
@@ -69,14 +77,24 @@ export function PlayerBookingPage() {
             <strong>Session:</strong> {session.title}
           </p>
           <p>
-            <strong>Sân:</strong> {court.name}
+            <strong>Sân:</strong> {court.subCourtName}
+          </p>
+          <p>
+            <strong>Khu sân:</strong> {court.complexName}
           </p>
           <p>
             <strong>Thời gian:</strong> {formatSessionTime(session.startsAt)}
           </p>
         </div>
 
-        <BookingModeToggle mode={mode} onChange={setMode} />
+        {hasPreferredMode ? (
+          <div className="rounded-2xl border border-red-200 bg-red-50 p-3 text-sm text-slate-700">
+            Bạn đang vào từ luồng <strong>{sourceType === "rental" ? "Thuê nguyên sân" : "Kèo chờ ghép"}</strong>.
+            Chế độ đặt đã được chọn sẵn để demo rõ hơn.
+          </div>
+        ) : null}
+
+        {!hasPreferredMode ? <BookingModeToggle mode={mode} onChange={setMode} /> : null}
 
         {mode === "solo" ? (
           <Input

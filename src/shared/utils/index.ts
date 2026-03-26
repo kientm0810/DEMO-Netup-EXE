@@ -16,6 +16,7 @@ export { recommendSessions, isSessionSkillCompatible } from "./recommendation";
 export type { RecommendationInput, SessionRecommendation } from "./recommendation";
 export { calculateAssessmentScore, classifySkillLevel } from "./assessment";
 export type { AssessmentScoreInput } from "./assessment";
+export { getPostBackgroundBySport } from "./postBackground";
 export {
   calculateDistanceKm,
   formatDistanceLabel,

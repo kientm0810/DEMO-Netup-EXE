@@ -43,7 +43,7 @@ export function PlayerBookingSuccessPage() {
             <strong>Số tiền:</strong> {formatVnd(booking.totalPriceVnd)}
           </p>
           <p>
-            <strong>Mode:</strong> {booking.mode === "solo" ? "Nhóm A - Ghép lẻ" : "Nhóm B - Đặt trọn sân"}
+            <strong>Mode:</strong> {booking.mode === "solo" ? "Tham gia pool theo slot" : "Thuê nguyên sân"}
           </p>
         </div>
       </Card>
@@ -55,7 +55,10 @@ export function PlayerBookingSuccessPage() {
             <strong>Session:</strong> {session?.title ?? booking.sessionId}
           </p>
           <p>
-            <strong>Sân:</strong> {court?.name ?? booking.courtId}
+            <strong>Sân:</strong> {court?.subCourtName ?? booking.courtId}
+          </p>
+          <p>
+            <strong>Khu sân:</strong> {court?.complexName ?? "-"}
           </p>
           <p>
             <strong>Thời gian:</strong> {session ? formatSessionTime(session.startsAt) : "-"}

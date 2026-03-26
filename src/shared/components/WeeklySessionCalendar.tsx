@@ -5,7 +5,7 @@ import { cn } from "../utils";
 const DAY_MS = 24 * 60 * 60 * 1000;
 const DEFAULT_START_HOUR = 6;
 const DEFAULT_END_HOUR = 22;
-const HOUR_HEIGHT = 52;
+const HOUR_HEIGHT = 40;
 
 const sportColorClass: Record<Court["sport"], string> = {
   Badminton: "border-emerald-300 bg-emerald-50 text-emerald-900",
@@ -17,6 +17,7 @@ export interface WeeklySessionCalendarItem {
   session: Session;
   court: Court;
   isPromoted?: boolean;
+  tags?: string[];
 }
 
 interface PositionedCalendarItem extends WeeklySessionCalendarItem {
@@ -160,7 +161,7 @@ export function WeeklySessionCalendar({
       const startDecimal = startDate.getHours() + startDate.getMinutes() / 60;
       const endDecimal = endDate.getHours() + endDate.getMinutes() / 60;
       const top = (startDecimal - startHour) * HOUR_HEIGHT;
-      const height = Math.max((endDecimal - startDecimal) * HOUR_HEIGHT, 40);
+      const height = Math.max((endDecimal - startDecimal) * HOUR_HEIGHT, 32);
 
       buckets[dayIndex].push({
         ...item,
@@ -206,8 +207,8 @@ export function WeeklySessionCalendar({
   return (
     <div className={cn("space-y-2", className)}>
       <div className="overflow-x-auto rounded-2xl border border-slate-200 bg-white">
-        <div className="min-w-[980px]">
-          <div className="grid grid-cols-[72px_repeat(7,minmax(125px,1fr))] border-b border-slate-200">
+        <div className="min-w-[860px]">
+          <div className="grid grid-cols-[62px_repeat(7,minmax(110px,1fr))] border-b border-slate-200">
             <div className="bg-slate-50 px-2 py-2 text-xs font-semibold text-slate-500">Giờ</div>
             {weekDays.map((day) => (
               <div key={day.toISOString()} className="border-l border-slate-200 bg-slate-50 px-2 py-2 text-xs">
@@ -219,7 +220,7 @@ export function WeeklySessionCalendar({
             ))}
           </div>
 
-          <div className="grid grid-cols-[72px_repeat(7,minmax(125px,1fr))]">
+          <div className="grid grid-cols-[62px_repeat(7,minmax(110px,1fr))]">
             <div className="relative border-r border-slate-200 bg-white" style={{ height: `${calendarHeight}px` }}>
               {hourMarks.map((hour) => (
                 <div
@@ -255,14 +256,14 @@ export function WeeklySessionCalendar({
                     const leftPercent = laneWidth * item.lane;
                     const isSelected = item.session.id === selectedSessionId;
                     const slotLabel = `${item.session.openSlots}/${item.session.maxSlots} slot`;
-                    const tooltip = `${item.court.name} • ${item.court.address}`;
+                    const tooltip = `${item.court.subCourtName} (${item.court.complexName}) • ${item.court.address}`;
                     const slotClassName = getSlotClassName({ isSelected, item, colorMode });
 
                     const sharedProps = {
-                      title: `${tooltip}\n${item.session.title}\n${formatSessionRange(
+                      title: `${tooltip}\n${item.court.subCourtName}\n${formatSessionRange(
                         item.session.startsAt,
                         item.session.durationMinutes,
-                      )}\n${slotLabel}`,
+                      )}\n${slotLabel}${item.tags && item.tags.length > 0 ? `\nTag: ${item.tags.join(", ")}` : ""}`,
                       className: cn(
                         "group absolute overflow-hidden rounded-lg border px-2 py-1 text-left text-[11px] shadow-sm transition",
                         slotClassName,
@@ -288,10 +289,22 @@ export function WeeklySessionCalendar({
                           <p className="truncate font-semibold">
                             {formatSessionRange(item.session.startsAt, item.session.durationMinutes)}
                           </p>
-                          <p className="truncate">{item.court.name}</p>
+                          <p className="truncate">{item.court.subCourtName}</p>
                           <p className="font-semibold">{slotLabel}</p>
+                          {item.tags && item.tags.length > 0 ? (
+                            <div className="flex flex-wrap gap-1">
+                              {item.tags.slice(0, 2).map((tag) => (
+                                <span
+                                  key={`${item.session.id}-${tag}`}
+                                  className="rounded-full bg-white/75 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700"
+                                >
+                                  {tag}
+                                </span>
+                              ))}
+                            </div>
+                          ) : null}
                           <p className="truncate text-[10px] font-semibold">
-                            {item.isPromoted ? "Bấm để gỡ post" : "Bấm để publish post"}
+                            Bấm để thao tác slot
                           </p>
                         </button>
                       );
@@ -302,8 +315,20 @@ export function WeeklySessionCalendar({
                         <p className="truncate font-semibold">
                           {formatSessionRange(item.session.startsAt, item.session.durationMinutes)}
                         </p>
-                        <p className="truncate">{item.session.title}</p>
+                        <p className="truncate">{item.court.subCourtName}</p>
                         <p className="truncate">{slotLabel}</p>
+                        {item.tags && item.tags.length > 0 ? (
+                          <div className="mt-1 flex flex-wrap gap-1">
+                            {item.tags.slice(0, 2).map((tag) => (
+                              <span
+                                key={`${item.session.id}-readonly-${tag}`}
+                                className="rounded-full bg-white/75 px-1.5 py-0.5 text-[10px] font-semibold text-slate-700"
+                              >
+                                {tag}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
                       </div>
                     );
                   })}

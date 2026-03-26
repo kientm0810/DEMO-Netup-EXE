@@ -210,7 +210,7 @@ export function AssistantChatbotPage() {
                     <div key={item.session.id} className="rounded-lg border border-slate-200 bg-slate-50 p-2">
                       <p className="font-medium text-ink">{item.session.title}</p>
                       <p>
-                        {item.court.name} • {item.court.district}
+                        {item.court.subCourtName} • {item.court.district}
                       </p>
                       <p>{formatVnd(item.session.slotPriceVnd)}/slot</p>
                     </div>

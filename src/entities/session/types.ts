@@ -15,3 +15,11 @@ export interface Session {
   isPeakHour: boolean;
   allowsSoloJoin: boolean;
 }
+
+export interface PoolPostConfig {
+  sessionId: string;
+  totalSlots: number;
+  hostSlots: number;
+  createdByPlayerId: string;
+  createdAt: string;
+}

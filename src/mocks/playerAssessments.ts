@@ -4,7 +4,7 @@ export const playerAssessments: Record<string, PlayerAssessment> = {
   "player-001": {
     playerId: "player-001",
     preferredSport: "Badminton",
-    preferredDistrict: "Thu Duc",
+    preferredDistrict: "Thạch Thất",
     budgetPerSessionVnd: 130000,
     sessionsPerWeek: 3,
     experienceYears: 2,

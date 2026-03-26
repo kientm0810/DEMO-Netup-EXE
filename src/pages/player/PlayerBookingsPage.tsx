@@ -12,10 +12,10 @@ export function PlayerBookingsPage() {
     return (
       <EmptyState
         title="Bạn chưa có booking nào"
-        description="Thử vào trang khám phá để đặt kèo hoặc bao sân cho nhóm."
+        description="Thử vào Kèo chờ ghép hoặc Thuê nguyên sân để tạo booking mới."
       >
-        <Link to="/player/discovery">
-          <Button>Đi khám phá ngay</Button>
+        <Link to="/player/pool-posts">
+          <Button>Đi đặt sân ngay</Button>
         </Link>
       </EmptyState>
     );
@@ -35,7 +35,7 @@ export function PlayerBookingsPage() {
                   {session?.title ?? "Session không xác định"}
                 </h3>
                 <p className="text-sm text-slate-600">
-                  {court?.name ?? "Sân không xác định"} •{" "}
+                  {court?.subCourtName ?? "Sân không xác định"} •{" "}
                   {session ? formatSessionTime(session.startsAt) : "N/A"}
                 </p>
               </div>
