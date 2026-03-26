@@ -36,6 +36,7 @@ export function PlayerPoolPostsPage() {
   const [desiredTotalSlots, setDesiredTotalSlots] = useState<number>(4);
   const [myRegisteredSlots, setMyRegisteredSlots] = useState<number>(1);
   const [createMessage, setCreateMessage] = useState<string>("");
+  const [creatingPool, setCreatingPool] = useState(false);
   const [userLocation, setUserLocation] = useState<Coordinates | null>(null);
   const [locationStatus, setLocationStatus] = useState<"idle" | "loading" | "ready" | "error">("idle");
   const [locationError, setLocationError] = useState("");
@@ -169,17 +170,19 @@ export function PlayerPoolPostsPage() {
     }
   }, [desiredTotalSlots, myRegisteredSlots, selectedCreateSession]);
 
-  const handleCreatePool = () => {
+  const handleCreatePool = async () => {
     if (!selectedCreateSession) {
       setCreateMessage("Bạn cần chọn sân và khung giờ trước khi tạo post ghép kèo.");
       return;
     }
 
-    const ok = createPoolPost({
+    setCreatingPool(true);
+    const ok = await createPoolPost({
       sessionId: selectedCreateSession.id,
       totalSlots: desiredTotalSlots,
       hostSlots: myRegisteredSlots,
     });
+    setCreatingPool(false);
 
     setCreateMessage(
       ok
@@ -286,8 +289,8 @@ export function PlayerPoolPostsPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
-          <Button onClick={handleCreatePool} disabled={!selectedCreateSession}>
-            Tạo post ghép kèo
+          <Button onClick={() => void handleCreatePool()} disabled={!selectedCreateSession || creatingPool}>
+            {creatingPool ? "Đang tạo..." : "Tạo post ghép kèo"}
           </Button>
           <Link to="/player/rent-courts">
             <Button variant="outline">Chuyển sang thuê nguyên sân</Button>

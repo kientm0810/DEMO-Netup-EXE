@@ -7,13 +7,14 @@ type CheckInStatus = "idle" | "checked_in" | "already_checked_in" | "not_found";
 
 interface CheckInPanelProps {
   sampleCodes: string[];
-  onCheckIn: (bookingCode: string) => { status: CheckInStatus; booking?: Booking };
+  onCheckIn: (bookingCode: string) => Promise<{ status: CheckInStatus; booking?: Booking }>;
 }
 
 export function CheckInPanel({ sampleCodes, onCheckIn }: CheckInPanelProps) {
   const [code, setCode] = useState("");
   const [status, setStatus] = useState<CheckInStatus>("idle");
   const [booking, setBooking] = useState<Booking | undefined>(undefined);
+  const [isCheckingIn, setIsCheckingIn] = useState(false);
 
   const statusUi = useMemo(() => {
     if (status === "checked_in") {
@@ -40,10 +41,15 @@ export function CheckInPanel({ sampleCodes, onCheckIn }: CheckInPanelProps) {
     };
   }, [status]);
 
-  const runCheckIn = (targetCode: string) => {
-    const result = onCheckIn(targetCode);
+  const runCheckIn = async (targetCode: string) => {
+    if (!targetCode.trim()) {
+      return;
+    }
+    setIsCheckingIn(true);
+    const result = await onCheckIn(targetCode);
     setStatus(result.status);
     setBooking(result.booking);
+    setIsCheckingIn(false);
   };
 
   return (
@@ -56,11 +62,16 @@ export function CheckInPanel({ sampleCodes, onCheckIn }: CheckInPanelProps) {
         onChange={(event) => setCode(event.target.value)}
       />
       <div className="flex flex-wrap gap-2">
-        <Button onClick={() => runCheckIn(code)} disabled={!code.trim()}>
+        <Button onClick={() => void runCheckIn(code)} disabled={!code.trim() || isCheckingIn}>
           Xác nhận check-in
         </Button>
         {sampleCodes.map((sampleCode) => (
-          <Button key={sampleCode} variant="outline" onClick={() => runCheckIn(sampleCode)}>
+          <Button
+            key={sampleCode}
+            variant="outline"
+            onClick={() => void runCheckIn(sampleCode)}
+            disabled={isCheckingIn}
+          >
             {sampleCode}
           </Button>
         ))}

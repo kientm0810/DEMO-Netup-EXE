@@ -43,6 +43,8 @@ export function PlayerAssessmentPage() {
 
   const score = calculateAssessmentScore(form);
   const level = classifySkillLevel(score);
+  const [saving, setSaving] = useState(false);
+  const [saveMessage, setSaveMessage] = useState("");
 
   const recommendations = useMemo(() => {
     return recommendSessions({
@@ -58,8 +60,10 @@ export function PlayerAssessmentPage() {
     }).slice(0, 3);
   }, [form, level, state.courts, state.sessions]);
 
-  const handleSave = () => {
-    savePlayerAssessment({
+  const handleSave = async () => {
+    setSaving(true);
+    setSaveMessage("");
+    await savePlayerAssessment({
       playerId: currentPlayerId,
       preferredSport: form.preferredSport,
       preferredDistrict: form.preferredDistrict,
@@ -71,6 +75,8 @@ export function PlayerAssessmentPage() {
       tacticalScore: form.tacticalScore,
       calculatedLevel: level,
     });
+    setSaving(false);
+    setSaveMessage("Đã lưu đánh giá lên Supabase.");
   };
 
   return (
@@ -173,11 +179,14 @@ export function PlayerAssessmentPage() {
         </div>
 
         <div className="flex flex-wrap gap-2">
-          <Button onClick={handleSave}>Lưu kết quả đánh giá</Button>
+          <Button onClick={() => void handleSave()} disabled={saving}>
+            {saving ? "Đang lưu..." : "Lưu kết quả đánh giá"}
+          </Button>
           <Link to="/player/discovery">
             <Button variant="outline">Xem gợi ý ở trang khám phá</Button>
           </Link>
         </div>
+        {saveMessage ? <p className="text-sm text-slate-700">{saveMessage}</p> : null}
       </Card>
 
       <Card className="space-y-4">

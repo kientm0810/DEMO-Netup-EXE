@@ -30,6 +30,7 @@ export function OwnerCourtsPage() {
   const { state, currentOwnerId, updateCourtRentalLimit } = useAppStore();
   const [rentalLimitInput, setRentalLimitInput] = useState(120);
   const [rentalLimitMessage, setRentalLimitMessage] = useState("");
+  const [savingRentalLimit, setSavingRentalLimit] = useState(false);
 
   const ownerCourts = useMemo(
     () => state.courts.filter((court) => court.ownerId === currentOwnerId),
@@ -61,7 +62,7 @@ export function OwnerCourtsPage() {
     return (
       <EmptyState
         title="Chưa có sân đăng ký"
-        description="Chủ sân chưa khai báo tài nguyên sân trong mock data."
+        description="Chủ sân chưa khai báo tài nguyên sân trong dữ liệu hiện tại."
       />
     );
   }
@@ -89,9 +90,11 @@ export function OwnerCourtsPage() {
     tags: poolSet.has(session.id) ? ["Pool chờ ghép", "Có thể thuê sân"] : ["Thuê nguyên sân"],
   }));
 
-  const saveRentalLimit = () => {
-    updateCourtRentalLimit(registeredCourt.id, rentalLimitInput);
+  const saveRentalLimit = async () => {
+    setSavingRentalLimit(true);
+    await updateCourtRentalLimit(registeredCourt.id, rentalLimitInput);
     setRentalLimitMessage("Đã cập nhật giới hạn thời lượng thuê cho sân này.");
+    setSavingRentalLimit(false);
   };
 
   return (
@@ -105,7 +108,7 @@ export function OwnerCourtsPage() {
       </Card>
 
       <Card className="space-y-3">
-        <h3 className="font-heading text-lg font-semibold text-ink">Biểu mẫu đăng ký sân (demo)</h3>
+        <h3 className="font-heading text-lg font-semibold text-ink">Biểu mẫu đăng ký sân</h3>
         <div className="grid gap-3 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 md:grid-cols-2">
           <p>
             <strong>Tên khu sân:</strong> {registeredCourt.complexName}
@@ -131,7 +134,9 @@ export function OwnerCourtsPage() {
             }}
           />
           <div className="flex items-end">
-            <Button onClick={saveRentalLimit}>Lưu giới hạn thuê</Button>
+            <Button onClick={() => void saveRentalLimit()} disabled={savingRentalLimit}>
+              {savingRentalLimit ? "Đang lưu..." : "Lưu giới hạn thuê"}
+            </Button>
           </div>
         </div>
         {rentalLimitMessage ? <p className="text-sm text-slate-700">{rentalLimitMessage}</p> : null}

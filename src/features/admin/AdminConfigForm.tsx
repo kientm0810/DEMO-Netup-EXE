@@ -4,17 +4,20 @@ import { Badge, Button, Card, Input } from "../../shared/components";
 
 interface AdminConfigFormProps {
   initialConfig: AdminConfig;
-  onSave: (nextConfig: AdminConfig) => void;
+  onSave: (nextConfig: AdminConfig) => Promise<void>;
 }
 
 export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps) {
   const [config, setConfig] = useState<AdminConfig>(initialConfig);
   const [saved, setSaved] = useState(false);
+  const [saving, setSaving] = useState(false);
 
-  const onSubmit = (event: FormEvent<HTMLFormElement>) => {
+  const onSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    onSave(config);
+    setSaving(true);
+    await onSave(config);
     setSaved(true);
+    setSaving(false);
   };
 
   return (
@@ -95,7 +98,9 @@ export function AdminConfigForm({ initialConfig, onSave }: AdminConfigFormProps)
         </label>
 
         <div className="sm:col-span-2 flex items-center gap-3">
-          <Button type="submit">Lưu cấu hình</Button>
+          <Button type="submit" disabled={saving}>
+            {saving ? "Đang lưu..." : "Lưu cấu hình"}
+          </Button>
           {saved ? <Badge tone="success">Đã lưu vào mock state</Badge> : null}
         </div>
       </form>

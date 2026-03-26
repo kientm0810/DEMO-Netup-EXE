@@ -22,7 +22,7 @@ export function AdminDashboardPage() {
         <StatCard label="Tổng người chơi" value={state.players.length.toString()} />
         <StatCard label="Tổng số sân" value={state.courts.length.toString()} />
         <StatCard label="Session đang mở" value={metrics.activeSessions.toString()} />
-        <StatCard label="Booking hôm nay (mock)" value={state.bookings.length.toString()} />
+        <StatCard label="Booking hôm nay (DB)" value={state.bookings.length.toString()} />
       </div>
 
       <div className="grid gap-4 lg:grid-cols-[1fr,1fr]">

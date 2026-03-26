@@ -52,6 +52,16 @@ begin
 end;
 $$;
 
+create or replace function public.set_session_ends_at()
+returns trigger
+language plpgsql
+as $$
+begin
+  new.ends_at = new.starts_at + (new.duration_minutes || ' minutes')::interval;
+  return new;
+end;
+$$;
+
 create table if not exists public.profiles (
   id uuid primary key default gen_random_uuid(),
   auth_user_id uuid unique references auth.users(id) on delete set null,
@@ -109,9 +119,7 @@ create table if not exists public.sessions (
   duration_minutes integer not null check (
     duration_minutes in (30, 60, 90, 120, 150, 180, 210, 240, 270, 300)
   ),
-  ends_at timestamptz generated always as (
-    starts_at + make_interval(mins => duration_minutes)
-  ) stored,
+  ends_at timestamptz not null,
   open_slots integer not null check (open_slots >= 0),
   max_slots integer not null check (max_slots > 0 and open_slots <= max_slots),
   required_skill_min public.skill_level not null default 'Beginner',
@@ -245,6 +253,12 @@ create trigger trg_sessions_updated_at
 before update on public.sessions
 for each row
 execute function public.set_updated_at();
+
+drop trigger if exists trg_sessions_set_ends_at on public.sessions;
+create trigger trg_sessions_set_ends_at
+before insert or update of starts_at, duration_minutes on public.sessions
+for each row
+execute function public.set_session_ends_at();
 
 drop trigger if exists trg_admin_configs_updated_at on public.admin_configs;
 create trigger trg_admin_configs_updated_at

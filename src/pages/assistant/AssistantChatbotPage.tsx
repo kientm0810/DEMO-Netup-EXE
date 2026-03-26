@@ -184,7 +184,7 @@ export function AssistantChatbotPage() {
           <div>
             <h2 className="font-heading text-xl font-semibold text-ink">Demo Trợ lý AI NetUp</h2>
             <p className="mt-1 text-sm text-slate-600">
-              Nguồn context: <code>CHATBOT_CONTEXT.md</code> + dữ liệu mock thực tế.
+              Nguồn context: <code>CHATBOT_CONTEXT.md</code> + dữ liệu đang đồng bộ từ database.
             </p>
           </div>
           <Badge tone="success">

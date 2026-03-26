@@ -52,7 +52,7 @@ export function PlayerSessionDetailPage() {
     return (
       <EmptyState
         title="Session không tồn tại"
-        description="Session có thể đã kết thúc hoặc không còn trong mock data."
+        description="Session có thể đã kết thúc hoặc không còn trong dữ liệu hiện tại."
       >
         <Link to="/player/discovery">
           <Button>Quay về trang khám phá</Button>
@@ -128,7 +128,7 @@ export function PlayerSessionDetailPage() {
   const [rentalError, setRentalError] = useState("");
   const [rentalSubmitting, setRentalSubmitting] = useState(false);
 
-  const handleCreateRentalSlot = () => {
+  const handleCreateRentalSlot = async () => {
     if (!court) {
       setRentalError("Không tìm thấy thông tin sân.");
       return;
@@ -147,7 +147,7 @@ export function PlayerSessionDetailPage() {
 
     setRentalSubmitting(true);
     setRentalError("");
-    const createdSession = createRentalSlot({
+    const createdSession = await createRentalSlot({
       courtId: court.id,
       startsAt: startsAtDate.toISOString(),
       durationMinutes: rentalDurationMinutes,
@@ -231,7 +231,7 @@ export function PlayerSessionDetailPage() {
             </div>
             {rentalError ? <p className="text-sm text-red-700">{rentalError}</p> : null}
             <div className="flex flex-wrap gap-2">
-              <Button onClick={handleCreateRentalSlot} disabled={rentalSubmitting}>
+              <Button onClick={() => void handleCreateRentalSlot()} disabled={rentalSubmitting}>
                 {rentalSubmitting ? "Đang tạo slot..." : "Tạo slot trên lịch và thuê sân"}
               </Button>
             </div>

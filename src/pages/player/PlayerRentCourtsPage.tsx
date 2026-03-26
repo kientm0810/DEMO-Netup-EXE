@@ -160,7 +160,7 @@ export function PlayerRentCourtsPage() {
     });
   }, [poolSessionSet, selectedCourt, selectedCourtSessions, state.poolPostConfigs]);
 
-  const handleCreateRentalSlot = () => {
+  const handleCreateRentalSlot = async () => {
     if (!selectedCourt) {
       setRentalError("Bạn cần chọn sân để tạo slot thuê.");
       return;
@@ -179,7 +179,7 @@ export function PlayerRentCourtsPage() {
 
     setRentalSubmitting(true);
     setRentalError("");
-    const createdSession = createRentalSlot({
+    const createdSession = await createRentalSlot({
       courtId: selectedCourt.id,
       startsAt: startsAtDate.toISOString(),
       durationMinutes: rentalDurationMinutes,
@@ -329,7 +329,7 @@ export function PlayerRentCourtsPage() {
               }}
             />
             <div className="flex items-end">
-              <Button onClick={handleCreateRentalSlot} disabled={rentalSubmitting}>
+              <Button onClick={() => void handleCreateRentalSlot()} disabled={rentalSubmitting}>
                 {rentalSubmitting ? "Đang tạo..." : "Tạo slot và thuê sân"}
               </Button>
             </div>

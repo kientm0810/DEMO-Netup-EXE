@@ -1,4 +1,6 @@
 import { NavLink, Outlet } from "react-router-dom";
+import { useAppStore } from "../providers/AppStoreProvider";
+import { Button } from "../../shared/components";
 import { cn } from "../../shared/utils";
 
 const entryLinks = [
@@ -9,6 +11,8 @@ const entryLinks = [
 ];
 
 export function RootLayout() {
+  const { isLoading, syncError, reloadData } = useAppStore();
+
   return (
     <div className="relative min-h-screen bg-[#f3f4f6] text-ink">
       <div className="pointer-events-none absolute inset-0 bg-noise-grid bg-[size:24px_24px] opacity-40" />
@@ -40,6 +44,17 @@ export function RootLayout() {
       </header>
 
       <main className="mx-auto w-full max-w-7xl px-4 py-8 sm:px-6">
+        {(isLoading || syncError) && (
+          <div className="mb-4 rounded-xl border border-slate-200 bg-white p-3 text-sm">
+            <div className="flex flex-wrap items-center gap-2">
+              {isLoading ? <span className="text-slate-700">Đang đồng bộ dữ liệu từ Supabase...</span> : null}
+              {syncError ? <span className="text-red-700">{syncError}</span> : null}
+              <Button variant="outline" onClick={() => void reloadData()} disabled={isLoading}>
+                Làm mới dữ liệu
+              </Button>
+            </div>
+          </div>
+        )}
         <Outlet />
       </main>
     </div>

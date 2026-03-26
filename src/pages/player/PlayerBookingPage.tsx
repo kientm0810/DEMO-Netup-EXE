@@ -24,12 +24,13 @@ export function PlayerBookingPage() {
   const [mode, setMode] = useState<"solo" | "full_court">(preferredMode);
   const [seatsBooked, setSeatsBooked] = useState(1);
   const [submitError, setSubmitError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   if (!session || !court) {
     return (
       <EmptyState
         title="Không thể tạo booking"
-        description="Session không hợp lệ hoặc đã bị xóa khỏi mock data."
+        description="Session không hợp lệ hoặc đã bị xóa khỏi dữ liệu hiện tại."
       >
         <Link to="/player/discovery">
           <Button>Quay lại khám phá</Button>
@@ -52,8 +53,9 @@ export function PlayerBookingPage() {
 
   const submitLabel = mode === "solo" ? "Xác nhận ghép kèo" : "Xác nhận bao sân";
 
-  const onSubmitBooking = () => {
-    const newBooking = createBooking({
+  const onSubmitBooking = async () => {
+    setSubmitting(true);
+    const newBooking = await createBooking({
       sessionId: session.id,
       playerId: currentPlayerId,
       mode,
@@ -62,6 +64,7 @@ export function PlayerBookingPage() {
 
     if (!newBooking) {
       setSubmitError("Không thể tạo booking, vui lòng thử lại.");
+      setSubmitting(false);
       return;
     }
 
@@ -119,7 +122,9 @@ export function PlayerBookingPage() {
         {submitError ? <p className="text-sm text-red-600">{submitError}</p> : null}
 
         <div className="flex flex-wrap gap-2">
-          <Button onClick={onSubmitBooking}>{submitLabel}</Button>
+          <Button onClick={() => void onSubmitBooking()} disabled={submitting}>
+            {submitting ? "Đang tạo..." : submitLabel}
+          </Button>
           <Link to={`/player/session/${session.id}`}>
             <Button variant="outline">Quay lại session</Button>
           </Link>
