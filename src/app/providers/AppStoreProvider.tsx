@@ -376,7 +376,9 @@ export function AppStoreProvider({ children }: PropsWithChildren) {
   const reloadDataInternal = useCallback(async (silent: boolean) => {
     if (!hasSupabaseConfig || !supabase) {
       setState(buildMockState());
-      setSyncError("Thieu bien moi truong Supabase, app dang fallback sang mock.");
+      setSyncError(
+        "Thieu env Supabase tren frontend. Can VITE_SUPABASE_URL + VITE_SUPABASE_ANON_KEY (hoac NEXT_PUBLIC_*), sau do redeploy.",
+      );
       setIsLoading(false);
       return;
     }
